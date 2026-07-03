@@ -1,0 +1,308 @@
+{
+  "game": {
+    "date": "JUN 22, 2026",
+    "reportNo": "RPT-2026-824261",
+    "series": "REGULAR SEASON",
+    "venue": "Comerica Park",
+    "firstPitch": "\u2014",
+    "weather": "SEE VENUE",
+    "line": "\u2014",
+    "status": "PREVIEW"
+  },
+  "away": {
+    "full": "New York Yankees",
+    "abbr": "NYY",
+    "record": "46-30",
+    "wPct": ".605",
+    "division": "\u2014",
+    "elo": "\u2014",
+    "runsPerG": "5.5",
+    "standing": "1ST",
+    "form": [
+      "W",
+      "L",
+      "W",
+      "W",
+      "W",
+      "W",
+      "L",
+      "W",
+      "L",
+      "L"
+    ],
+    "spark": [
+      {
+        "g": 1,
+        "r": 8
+      },
+      {
+        "g": 2,
+        "r": 5
+      },
+      {
+        "g": 3,
+        "r": 3
+      },
+      {
+        "g": 4,
+        "r": 8
+      },
+      {
+        "g": 5,
+        "r": 12
+      },
+      {
+        "g": 6,
+        "r": 10
+      },
+      {
+        "g": 7,
+        "r": 1
+      },
+      {
+        "g": 8,
+        "r": 5
+      },
+      {
+        "g": 9,
+        "r": 2
+      },
+      {
+        "g": 10,
+        "r": 1
+      }
+    ]
+  },
+  "home": {
+    "full": "Detroit Tigers",
+    "abbr": "DET",
+    "record": "33-44",
+    "wPct": ".429",
+    "division": "\u2014",
+    "elo": "\u2014",
+    "runsPerG": "4.4",
+    "standing": "4TH",
+    "form": [
+      "L",
+      "W",
+      "L",
+      "L",
+      "W",
+      "L",
+      "L",
+      "W",
+      "W",
+      "W"
+    ],
+    "spark": [
+      {
+        "g": 1,
+        "r": 4
+      },
+      {
+        "g": 2,
+        "r": 11
+      },
+      {
+        "g": 3,
+        "r": 2
+      },
+      {
+        "g": 4,
+        "r": 1
+      },
+      {
+        "g": 5,
+        "r": 9
+      },
+      {
+        "g": 6,
+        "r": 2
+      },
+      {
+        "g": 7,
+        "r": 2
+      },
+      {
+        "g": 8,
+        "r": 4
+      },
+      {
+        "g": 9,
+        "r": 4
+      },
+      {
+        "g": 10,
+        "r": 5
+      }
+    ]
+  },
+  "prediction": {
+    "winner": "New York Yankees",
+    "awayProb": 79,
+    "homeProb": 21,
+    "awayRuns": 4.9,
+    "homeRuns": 4.0,
+    "awayScore": 5,
+    "homeScore": 4,
+    "confidence": 57,
+    "confLabel": "MODERATE",
+    "spread": "-1.5",
+    "total": "8.9"
+  },
+  "pitchers": {
+    "away": {
+      "name": "Gerrit Cole",
+      "hand": "RHP",
+      "era": "2.57",
+      "whip": "1.00",
+      "k9": "7.7",
+      "rec": "2-1",
+      "gs": "5",
+      "inn": "28.0",
+      "last": "6.0 IP, 3 H, 2 ER, 2 BB, 6 K"
+    },
+    "home": {
+      "name": "Framber Valdez",
+      "hand": "LHP",
+      "era": "4.09",
+      "whip": "1.35",
+      "k9": "7.2",
+      "rec": "3-5",
+      "gs": "15",
+      "inn": "83.2",
+      "last": "6.0 IP, 6 H, 0 ER, 3 BB, 6 K"
+    }
+  },
+  "stats": [
+    {
+      "stat": "R/GAME (L10)",
+      "away": "5.5",
+      "home": "4.4"
+    },
+    {
+      "stat": "RECORD",
+      "away": "46-30",
+      "home": "33-44"
+    },
+    {
+      "stat": "WIN PCT",
+      "away": ".605",
+      "home": ".429"
+    },
+    {
+      "stat": "SP ERA",
+      "away": "2.57",
+      "home": "4.09"
+    },
+    {
+      "stat": "SP WHIP",
+      "away": "1.00",
+      "home": "1.35"
+    },
+    {
+      "stat": "SP K/9",
+      "away": "7.7",
+      "home": "7.2"
+    },
+    {
+      "stat": "DIVISION RANK",
+      "away": "1ST",
+      "home": "4TH"
+    }
+  ],
+  "factors": [
+    {
+      "name": "Starting Pitcher Quality",
+      "pct": 82,
+      "note": "Gerrit Cole vs Framber Valdez"
+    },
+    {
+      "name": "Recent Form (L10)",
+      "pct": 76,
+      "note": "WLWWWWLWLL vs LWLLWLLWWW"
+    },
+    {
+      "name": "Run Production",
+      "pct": 64,
+      "note": "5.5 vs 4.4 R/G last 10"
+    },
+    {
+      "name": "Season-to-Date ERA",
+      "pct": 58,
+      "note": "2.57 vs 4.09 ERA"
+    },
+    {
+      "name": "Win Percentage",
+      "pct": 44,
+      "note": ".605 vs .429 overall"
+    },
+    {
+      "name": "Home Field Factor",
+      "pct": 36,
+      "note": "Standard home field adjustment"
+    },
+    {
+      "name": "Lineup Matchup",
+      "pct": 22,
+      "note": "Insufficient lineup data"
+    }
+  ],
+  "runDist": [
+    {
+      "r": 0,
+      "away": 1,
+      "home": 1
+    },
+    {
+      "r": 1,
+      "away": 1,
+      "home": 2
+    },
+    {
+      "r": 2,
+      "away": 2,
+      "home": 7
+    },
+    {
+      "r": 3,
+      "away": 8,
+      "home": 16
+    },
+    {
+      "r": 4,
+      "away": 16,
+      "home": 20
+    },
+    {
+      "r": 5,
+      "away": 20,
+      "home": 16
+    },
+    {
+      "r": 6,
+      "away": 15,
+      "home": 7
+    },
+    {
+      "r": 7,
+      "away": 7,
+      "home": 2
+    },
+    {
+      "r": 8,
+      "away": 2,
+      "home": 1
+    },
+    {
+      "r": 9,
+      "away": 1,
+      "home": 1
+    },
+    {
+      "r": 10,
+      "away": 1,
+      "home": 1
+    }
+  ]
+}

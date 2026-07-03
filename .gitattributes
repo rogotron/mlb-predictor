@@ -1,0 +1,12 @@
+# Normalize line endings: LF in the repo, native in the working tree.
+* text=auto
+
+# Treat common binary assets as binary (never touch line endings).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pkl binary
+*.parquet binary
+*.xlsx binary

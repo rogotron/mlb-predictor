@@ -1,0 +1,68 @@
+# Data — never commit
+data/raw/
+data/processed/
+data/external/
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+
+# Models
+models/*.pkl
+models/*.joblib
+models/*.json
+!models/.gitkeep
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vite/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Env / secrets
+.env
+.env.local
+
+# Notebooks
+.ipynb_checkpoints/
+notebooks/scratch_*.ipynb
+
+# IDE / local tooling
+.vscode/
+.idea/
+*.swp
+.DS_Store
+.claude/settings.local.json
+
+# Test / coverage
+.pytest_cache/
+pytest-cache-files-*/
+.coverage
+htmlcov/
+.ruff_cache/
+
+# Diagnostic build artifacts (regenerable data — can be GBs)
+diagnostics/**/*.parquet
+
+# Prediction-tracking spreadsheets (personal / not for the public repo)
+*.xlsx
+*.xlsm
+
+# Logs
+*.log
