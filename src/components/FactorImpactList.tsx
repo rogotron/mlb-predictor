@@ -5,8 +5,8 @@ export function FactorImpactList({ factors, title }: { factors: ModelFactor[]; t
     <section className="glass-card p-5">
       <h3 className="text-lg font-semibold text-slate-950">{title}</h3>
       <div className="mt-4 space-y-4">
-        {factors.map((factor) => (
-          <div key={factor.name} title={factor.description}>
+        {factors.map((factor, index) => (
+          <div key={`${factor.name}-${index}`} title={factor.description}>
             <div className="mb-2 flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-slate-950">{factor.name}</p>
