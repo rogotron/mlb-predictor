@@ -89,6 +89,19 @@ function factorFromDriver(driver: string, index: number): ModelFactor {
   };
 }
 
+function factorsFromDrivers(drivers: string[]): ModelFactor[] {
+  const usedNames = new Set<string>();
+  return drivers.slice(0, 3).map((driver, index) => {
+    const factor = factorFromDriver(driver, index);
+    let name = factor.name;
+    for (let suffix = 2; usedNames.has(name); suffix += 1) {
+      name = `${factor.name} (${suffix})`;
+    }
+    usedNames.add(name);
+    return { ...factor, name };
+  });
+}
+
 function parseNumber(value?: string) {
   if (!value) return null;
   const cleaned = value.replace(/[^\d.-]/g, '');
@@ -172,7 +185,7 @@ function buildDifferentiatingFactors(game: MlbGame, staticGame: StaticSlateGame)
 
   if (factors.length) return factors.slice(0, 3);
 
-  return (staticGame.prediction?.drivers ?? []).slice(0, 3).map(factorFromDriver);
+  return factorsFromDrivers(staticGame.prediction?.drivers ?? []);
 }
 
 function buildModelExplanation(
@@ -278,7 +291,7 @@ export function buildPredictionFromModelSlate(game: MlbGame, staticGame: StaticS
     confidenceLabel,
     modelEdge: Number((Math.max(awayWinProbability, homeWinProbability) - 50).toFixed(1)),
     marketLine: prediction.spread ? `Model spread ${prediction.spread}` : 'Trained model slate',
-    topFactors: topFactors.length ? topFactors : drivers.slice(0, 3).map(factorFromDriver),
+    topFactors: topFactors.length ? topFactors : factorsFromDrivers(drivers),
     riskFactors: [
       'Lineups and late bullpen availability may still change before first pitch.',
       'Weather, scratches, and market movement can narrow the edge.',

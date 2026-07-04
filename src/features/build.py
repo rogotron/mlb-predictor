@@ -1417,9 +1417,22 @@ def build_bullpen_prediction_features(
         lambda r: r["home_team_id"] if r["side"] == "home" else r["away_team_id"],
         axis=1,
     )
+    pen["game_date"] = pd.to_datetime(pen["game_date"])
+    unmapped_dates = sorted(
+        pen.loc[pen["team_id"].isna(), "game_date"].dt.normalize().unique()
+    )
+    if unmapped_dates:
+        logger.warning(
+            "bullpen workload: %d relief appearances between %s and %s are missing "
+            "from the processed games cache and cannot be attributed to a team; "
+            "workload windows covering those dates will be NaN. Refresh ingest "
+            "(src.data.update.refresh_slate_inputs) to fix.",
+            int(pen["team_id"].isna().sum()),
+            pd.Timestamp(unmapped_dates[0]).date(),
+            pd.Timestamp(unmapped_dates[-1]).date(),
+        )
     pen = pen.dropna(subset=["team_id"])
     pen["team_id"] = pen["team_id"].astype(int)
-    pen["game_date"] = pd.to_datetime(pen["game_date"])
     pen = pen.sort_values(["team_id", "game_date"]).reset_index(drop=True)
 
     rows = []
@@ -1440,19 +1453,24 @@ def build_bullpen_prediction_features(
                 row[f"{side}_{col}_l{n_games}"] = (
                     recent[col].mean() if not recent.empty and col in recent else float("nan")
                 )
-            fatigue_start = target_ts - pd.Timedelta(days=fatigue_days)
-            fatigue = prior[prior["game_date"] >= fatigue_start]
             for days in (1, 2, fatigue_days):
                 fatigue_start = target_ts - pd.Timedelta(days=days)
+                if any(fatigue_start <= d < target_ts for d in unmapped_dates):
+                    # Unattributed appearances in this window: unknown, not zero.
+                    row[f"{side}_bullpen_pitches_l{days}d"] = float("nan")
+                    row[f"{side}_bullpen_games_l{days}d"] = float("nan")
+                    continue
                 fatigue = prior[prior["game_date"] >= fatigue_start]
                 pitches = fatigue["bullpen_pitches"].sum() if not fatigue.empty else 0
                 row[f"{side}_bullpen_pitches_l{days}d"] = pitches
                 row[f"{side}_bullpen_games_l{days}d"] = len(fatigue)
-            row[f"{side}_bullpen_back_to_back_l2d"] = int(
-                row[f"{side}_bullpen_games_l2d"] >= 2
+            games_l2d = row[f"{side}_bullpen_games_l2d"]
+            pitches_l2d = row[f"{side}_bullpen_pitches_l2d"]
+            row[f"{side}_bullpen_back_to_back_l2d"] = (
+                float("nan") if pd.isna(games_l2d) else int(games_l2d >= 2)
             )
-            row[f"{side}_bullpen_heavy_work_l2d"] = int(
-                row[f"{side}_bullpen_pitches_l2d"] >= 75
+            row[f"{side}_bullpen_heavy_work_l2d"] = (
+                float("nan") if pd.isna(pitches_l2d) else int(pitches_l2d >= 75)
             )
         rows.append(row)
 

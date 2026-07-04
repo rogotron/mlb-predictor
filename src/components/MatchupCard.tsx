@@ -79,8 +79,8 @@ export function MatchupCard({ game, onView }: { game: GamePrediction; onView: (g
       <div className="mt-4 rounded-lg border border-slate-200/75 bg-white/55 p-3">
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Top drivers</p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {game.topFactors.slice(0, 3).map((factor) => (
-            <span className="rounded-full bg-slate-900/5 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200/80" key={factor.name} title={factor.description}>
+          {game.topFactors.slice(0, 3).map((factor, index) => (
+            <span className="rounded-full bg-slate-900/5 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200/80" key={`${factor.name}-${index}`} title={factor.description}>
               {factor.name}
             </span>
           ))}

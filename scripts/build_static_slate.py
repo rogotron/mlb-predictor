@@ -4,6 +4,10 @@ Calls the same assembler as the live API so pitcher stats, standings, and
 model predictions are all included. Run this once per day after probables
 are confirmed; the frontend loads it instantly from the static file.
 
+By default this first refreshes the schedule, processed-games, and SP
+gamelog caches (stale processed games silently zero bullpen-workload
+features). Pass --skip-refresh to build from the caches as-is.
+
 Example:
     python scripts/build_static_slate.py                  # today
     python scripts/build_static_slate.py --date 2026-05-06
@@ -23,7 +27,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from backend.services.assemble import build_slate_payloads
-from src.data.update import today_in_schedule_timezone
+from src.data.update import refresh_slate_inputs, today_in_schedule_timezone
 from src.utils.logging import configure_logging
 
 logger = logging.getLogger(__name__)
@@ -43,11 +47,23 @@ def _json_safe(value: Any) -> Any:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--date", default=None, help="ISO date (default: today)")
+    parser.add_argument(
+        "--skip-refresh",
+        action="store_true",
+        help="Skip refreshing schedule/processed/gamelog caches before building",
+    )
     args = parser.parse_args()
 
     configure_logging()
 
     target = date.fromisoformat(args.date) if args.date else today_in_schedule_timezone()
+
+    if args.skip_refresh:
+        logger.info("skipping cache refresh (--skip-refresh)")
+    else:
+        logger.info("refreshing slate input caches for %s", target)
+        refresh_slate_inputs(target)
+
     logger.info("building static slate for %s", target)
 
     games = build_slate_payloads(target)

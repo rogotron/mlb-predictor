@@ -155,7 +155,9 @@ export function generateMockPredictionForGame(game: MlbGame): GamePrediction {
   const homeRunShare = homeProbability / 100;
   const projectedHomeRuns = Number((projectedTotal * (0.47 + homeRunShare * 0.12)).toFixed(1));
   const projectedAwayRuns = Number((projectedTotal - projectedHomeRuns).toFixed(1));
-  const topFactorIndexes = [seed % 5, (seed + 2) % 7, (seed + 5) % 8];
+  const topFactorIndexes = [
+    ...new Set([seed % 5, (seed + 2) % 7, (seed + 5) % 8, ...modelFactors.keys()]),
+  ].slice(0, 3);
   const predictionBase = {
     id: game.id,
     gamePk: game.gamePk,
