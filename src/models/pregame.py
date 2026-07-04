@@ -6,6 +6,7 @@ from datetime import date, datetime
 
 import pandas as pd
 
+from src.data.update import assert_processed_games_fresh
 from src.features.build import (
     build_bullpen_prediction_features,
     build_gamelog_pitcher_prediction_features,
@@ -83,6 +84,7 @@ def build_pregame_prediction_features(
     as_of_timestamp: datetime | None = None,
 ) -> pd.DataFrame:
     """Build prediction features and prepare pregame-safe audit sidecars."""
+    assert_processed_games_fresh(target_date, raw_dir=raw_dir, processed_dir=processed_dir)
     features = build_prediction_input(slate, processed_dir, target_date=target_date, raw_dir=raw_dir)
 
     def _merge(base: pd.DataFrame, extra: pd.DataFrame) -> pd.DataFrame:

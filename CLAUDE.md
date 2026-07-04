@@ -122,7 +122,7 @@ python scripts/train_model.py --model-mode legacy_full   # train the 169-feature
 python scripts/tune_hyperparams.py              # grid-search LightGBM params
 python scripts/predict_today.py                 # today's slate predictions
 python scripts/backtest_leakage_safe_comparison.py  # pregame_safe vs legacy vs baselines
-python scripts/build_static_slate.py --date 2026-06-24  # write public/slates/{date}.json for the React dashboard
+python scripts/build_static_slate.py --date 2026-06-24  # write public/slates/{date}.json for the React dashboard; auto-refreshes schedule/processed/gamelog caches first (--skip-refresh to opt out)
 python scripts/build_dashboard_data.py --team 147  # regenerate Yankees dashboard JSON
 python scripts/feature_importance.py            # ranked feature importance report
 ```

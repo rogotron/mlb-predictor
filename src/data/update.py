@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -19,7 +19,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import requests
 
-from src.utils.paths import PROCESSED_DIR
+from src.utils.paths import PROCESSED_DIR, RAW_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -391,3 +391,167 @@ def fetch_weather_for_slate(slate: pd.DataFrame) -> pd.DataFrame:
 def append_yesterday_results(yesterday: date, processed_dir: Path) -> None:
     """Append yesterday's final scores to the processed game log."""
     raise NotImplementedError
+
+
+# Schema of data/raw/schedule/schedule_{year}.parquet (see scripts/fetch_data.py).
+_RAW_SCHEDULE_COLUMNS = [
+    "game_pk",
+    "game_date",
+    "official_date",
+    "game_type",
+    "status",
+    "away_team_id",
+    "away_team_name",
+    "home_team_id",
+    "home_team_name",
+    "away_score",
+    "home_score",
+    "venue_id",
+    "venue_name",
+    "scheduled_innings",
+]
+
+
+def _fetch_raw_schedule_range(start_date: date, end_date: date) -> pd.DataFrame:
+    """Fetch schedule rows for a date range in the raw schedule cache schema."""
+    r = _SESSION.get(
+        f"{BASE_URL}/schedule",
+        params={
+            "startDate": start_date.strftime("%Y-%m-%d"),
+            "endDate": end_date.strftime("%Y-%m-%d"),
+            "sportId": 1,
+            "gameType": "R",
+        },
+        timeout=30,
+    )
+    r.raise_for_status()
+
+    rows = []
+    for d in r.json().get("dates", []):
+        for g in d.get("games", []):
+            rows.append({
+                "game_pk": g["gamePk"],
+                "game_date": g["gameDate"],
+                "official_date": g.get("officialDate"),
+                "game_type": g.get("gameType"),
+                "status": g.get("status", {}).get("abstractGameState"),
+                "away_team_id": g["teams"]["away"]["team"]["id"],
+                "away_team_name": g["teams"]["away"]["team"]["name"],
+                "home_team_id": g["teams"]["home"]["team"]["id"],
+                "home_team_name": g["teams"]["home"]["team"]["name"],
+                "away_score": g["teams"]["away"].get("score"),
+                "home_score": g["teams"]["home"].get("score"),
+                "venue_id": g.get("venue", {}).get("id"),
+                "venue_name": g.get("venue", {}).get("name"),
+                "scheduled_innings": g.get("scheduledInnings"),
+            })
+    return pd.DataFrame(rows, columns=_RAW_SCHEDULE_COLUMNS)
+
+
+def refresh_schedule_cache(
+    target_date: date,
+    raw_dir: Path = RAW_DIR,
+    overlap_days: int = 10,
+) -> pd.DataFrame:
+    """Incrementally refresh the raw schedule cache through target_date.
+
+    Refetches the last `overlap_days` before the cache's latest date (so
+    late finals, postponements, and score corrections get picked up) and
+    everything after it, then merges on game_pk keeping the fresh rows.
+    """
+    year = target_date.year
+    path = raw_dir / "schedule" / f"schedule_{year}.parquet"
+    cached = pd.read_parquet(path) if path.exists() else pd.DataFrame()
+
+    if cached.empty:
+        window_start = date(year, 3, 1)
+    else:
+        max_cached = pd.to_datetime(cached["official_date"]).max().date()
+        window_start = min(max_cached, target_date) - timedelta(days=overlap_days)
+    window_start = min(window_start, target_date)
+
+    fresh = _fetch_raw_schedule_range(window_start, target_date)
+
+    if cached.empty:
+        merged = fresh
+    else:
+        cached_dates = pd.to_datetime(cached["official_date"]).dt.date
+        keep = cached[(cached_dates < window_start) | (cached_dates > target_date)]
+        merged = pd.concat([keep, fresh], ignore_index=True)
+        merged = merged.drop_duplicates(subset=["game_pk"], keep="last")
+
+    merged = merged.sort_values("game_date").reset_index(drop=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    merged.to_parquet(path, index=False)
+    logger.info(
+        "refreshed schedule cache %s: %d fresh rows in [%s, %s], %d total",
+        path.name, len(fresh), window_start, target_date, len(merged),
+    )
+    return merged
+
+
+def refresh_slate_inputs(
+    target_date: date,
+    raw_dir: Path = RAW_DIR,
+    processed_dir: Path = PROCESSED_DIR,
+) -> None:
+    """Refresh every disk cache the slate feature builders read for a date.
+
+    Order matters: the schedule cache feeds both the processed-games rebuild
+    and the gamelog fetch. Statcast pitches are fetched on demand inside the
+    feature builders and need no refresh here.
+    """
+    from src.data.ingest import ingest_year
+    from src.data.pitching_gamelogs import fetch_season_pitching_logs
+
+    refresh_schedule_cache(target_date, raw_dir=raw_dir)
+    ingest_year(target_date.year, raw_dir, processed_dir, force=True)
+    fetch_season_pitching_logs(target_date.year, raw_dir=raw_dir, force=False)
+
+
+def assert_processed_games_fresh(
+    target_date: date,
+    raw_dir: Path = RAW_DIR,
+    processed_dir: Path = PROCESSED_DIR,
+) -> None:
+    """Raise if the processed games cache is missing completed games.
+
+    Stale processed games don't fail visibly: bullpen-workload features
+    silently zero out and team form freezes at the cache's max date. This
+    compares against the raw schedule cache and fails loudly instead.
+    Skipped when either cache is absent (nothing to compare against).
+    """
+    schedule_path = raw_dir / "schedule" / f"schedule_{target_date.year}.parquet"
+    games_path = processed_dir / "games" / f"games_{target_date.year}.parquet"
+    if not schedule_path.exists() or not games_path.exists():
+        return
+
+    schedule = pd.read_parquet(schedule_path)
+    if schedule.empty or "status" not in schedule.columns:
+        return
+    # Mirror src.data.ingest.process_games: only Final games with real scores
+    # are expected in the processed cache.
+    finals = schedule[
+        (schedule["status"] == "Final")
+        & schedule["home_score"].notna()
+        & schedule["away_score"].notna()
+        & (pd.to_datetime(schedule["official_date"]).dt.date < target_date)
+    ]
+    if finals.empty:
+        return
+
+    processed = pd.read_parquet(games_path)
+    processed_pks = set(processed["game_pk"].astype(int)) if not processed.empty else set()
+    missing = set(finals["game_pk"].astype(int)) - processed_pks
+
+    if missing:
+        missing_dates = pd.to_datetime(
+            finals.loc[finals["game_pk"].astype(int).isin(missing), "official_date"]
+        ).dt.date
+        raise RuntimeError(
+            f"processed games cache ({games_path.name}) is stale: {len(missing)} completed "
+            f"games between {missing_dates.min()} and {missing_dates.max()} are missing. "
+            "Stale processed games silently zero bullpen-workload features and freeze team "
+            "form. Run src.data.update.refresh_slate_inputs() or "
+            "scripts/build_static_slate.py without --skip-refresh."
+        )

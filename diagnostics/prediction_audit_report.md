@@ -1,8 +1,8 @@
 # Prediction Audit Report
 
-- audit_file: `data/processed/prediction_audit.csv`
-- generated_at_et: `2026-06-24T21:57:04.506650-04:00`
-- rows_checked: 22
+- audit_file: `C:\dev\mlb-predictor\data\processed\prediction_audit.csv`
+- generated_at_et: `2026-07-03T22:36:11.335520-04:00`
+- rows_checked: 63
 
 ## Checks
 - missing_game_id: PASS (0)
