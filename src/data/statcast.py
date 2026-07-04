@@ -1,7 +1,8 @@
 """Fetch and cache Statcast pitch data from Baseball Savant via pybaseball.
 
 Cache layout (one file per calendar month so incremental refreshes only
-re-fetch the current incomplete month):
+re-fetch the current month plus any past month whose cached file is
+truncated by an earlier mid-month fetch):
 
     data/raw/statcast/pitches_{year}_{month:02d}.parquet
 
@@ -22,6 +23,7 @@ barrel_rate is NaN.
 
 from __future__ import annotations
 
+import calendar
 import logging
 from datetime import date
 from pathlib import Path
@@ -89,10 +91,52 @@ def _month_path(raw_dir: Path, year: int, month: int) -> Path:
 
 
 def _is_month_complete(year: int, month: int) -> bool:
+    """Calendar check: has (year, month) fully elapsed?
+
+    Necessary but not sufficient for skipping a re-fetch — a parquet last
+    written mid-month is truncated even though the month has since ended.
+    Pair with _cache_covers_month() to verify the cache itself.
+    """
     today = date.today()
     if year < today.year:
         return True
     return year == today.year and month < today.month
+
+
+def _cache_covers_month(
+    cached: pd.DataFrame, year: int, month: int, raw_dir: Path
+) -> bool:
+    """True if a cached month of pitches extends to the month's final games.
+
+    Compares the cache's max game_date against the last game date scheduled
+    that month per the schedule cache (data/raw/schedule/schedule_{year}.parquet),
+    falling back to the last calendar day of the month when no schedule cache
+    exists. A month the schedule shows no games for (off-season) is covered by
+    an empty cache.
+    """
+    schedule_path = raw_dir / "schedule" / f"schedule_{year}.parquet"
+    if schedule_path.exists():
+        sched = pd.read_parquet(schedule_path)
+        # official_date is the local calendar date, matching Statcast's
+        # game_date semantics; game_date here is a UTC timestamp that can
+        # roll night games into the next day.
+        col = "official_date" if "official_date" in sched.columns else "game_date"
+        sched_dates = pd.to_datetime(sched[col], errors="coerce", utc=True).dt.tz_localize(None)
+        in_month = sched_dates[
+            (sched_dates.dt.year == year) & (sched_dates.dt.month == month)
+        ]
+        if in_month.empty:
+            return True
+        expected_last = in_month.max().date()
+    else:
+        expected_last = date(year, month, calendar.monthrange(year, month)[1])
+
+    if cached.empty or "game_date" not in cached.columns:
+        return False
+    cached_max = pd.to_datetime(cached["game_date"]).max()
+    if pd.isna(cached_max):
+        return False
+    return cached_max.date() >= expected_last
 
 
 def fetch_statcast_month(
@@ -105,9 +149,9 @@ def fetch_statcast_month(
 
     Complete (past) months are fetched once and never re-fetched unless
     force=True.  The current month is always re-fetched to stay current.
+    A past month whose cached parquet is truncated (last fetched mid-month)
+    is detected via _cache_covers_month() and re-fetched automatically.
     """
-    import calendar as _cal
-
     path = _month_path(raw_dir, year, month)
     complete = _is_month_complete(year, month)
     cache_key = (year, month, str(raw_dir.resolve()))
@@ -116,12 +160,18 @@ def fetch_statcast_month(
         return _MONTH_CACHE[cache_key].copy()
 
     if path.exists() and complete and not force:
-        logger.debug("statcast cache hit: %s", path)
         df = pd.read_parquet(path)
-        _MONTH_CACHE[cache_key] = df
-        return df.copy()
+        if _cache_covers_month(df, year, month, raw_dir):
+            logger.debug("statcast cache hit: %s", path)
+            _MONTH_CACHE[cache_key] = df
+            return df.copy()
+        logger.warning(
+            "statcast cache for %d-%02d is truncated (mid-month fetch); re-fetching",
+            year,
+            month,
+        )
 
-    last_day = _cal.monthrange(year, month)[1]
+    last_day = calendar.monthrange(year, month)[1]
     start = date(year, month, 1)
     end = min(date(year, month, last_day), date.today())
 
