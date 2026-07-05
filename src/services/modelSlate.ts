@@ -21,12 +21,18 @@ type StaticSlatePrediction = {
   drivers?: string[];
 };
 
+export type SlateFactor = {
+  name?: string;
+  pct?: number;
+  note?: string;
+  source?: string;
+};
+
 type StaticSlateGame = {
   game?: {
     gamePk?: number;
     venue?: string;
     firstPitch?: string;
-    weather?: string;
     status?: string;
   };
   away?: StaticSlateTeam;
@@ -41,15 +47,47 @@ type StaticSlateGame = {
     away?: string;
     home?: string;
   }>;
-  factors?: Array<{
-    name?: string;
-    pct?: number;
-    note?: string;
-  }>;
+  factors?: SlateFactor[];
+  // Extension point for per-game SHAP attributions (not yet populated).
+  explain?: { shap?: unknown };
+};
+
+export type SlateSource = {
+  key: string;
+  label: string;
+  status: 'ok' | 'missing' | 'error' | 'not_collected';
+  rows: number;
+  minDate: string | null;
+  maxDate: string | null;
+  daysBehind: number | null;
+  stale: boolean;
+};
+
+export type SlateProvenance = {
+  dataAsOf?: string;
+  targetDate?: string;
+  gameCount?: number | null;
+  dateRange?: { start?: string | null; end?: string | null };
+  anyStale?: boolean;
+  anyMissing?: boolean;
+  sources?: SlateSource[];
+};
+
+export type SlateModelGroup = { name: string; source: string; pct: number };
+
+export type SlateModelSummary = {
+  name?: string;
+  mode?: string;
+  featureCount?: number;
+  importanceMetric?: string;
+  factorGroups?: SlateModelGroup[];
 };
 
 type StaticSlatePayload = {
   date?: string;
+  generatedAt?: string;
+  provenance?: SlateProvenance;
+  model?: SlateModelSummary;
   games?: StaticSlateGame[];
 };
 
@@ -58,6 +96,9 @@ export type ModelSlateStatus = 'loaded' | 'missing' | 'error';
 export type ModelSlateResult = {
   status: ModelSlateStatus;
   predictionsByGamePk: Map<number, StaticSlateGame>;
+  provenance?: SlateProvenance;
+  model?: SlateModelSummary;
+  generatedAt?: string;
   message?: string;
 };
 
@@ -102,90 +143,48 @@ function factorsFromDrivers(drivers: string[]): ModelFactor[] {
   });
 }
 
-function parseNumber(value?: string) {
-  if (!value) return null;
-  const cleaned = value.replace(/[^\d.-]/g, '');
-  if (!cleaned) return null;
-  const parsed = Number(cleaned);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function teamLabel(game: MlbGame, side: 'away' | 'home') {
-  return side === 'away' ? game.awayTeam.abbreviation : game.homeTeam.abbreviation;
-}
-
-function categoryForStat(stat: string) {
-  const upper = stat.toUpperCase();
-  if (upper.includes('SP')) return 'Pitching';
-  if (upper.includes('R/GAME')) return 'Form';
-  if (upper.includes('WIN') || upper.includes('RECORD')) return 'Season';
+function categoryForFactor(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower.includes('bullpen')) return 'Bullpen';
+  if (lower.includes('pitcher') || lower.includes('pitch')) return 'Pitching';
+  if (lower.includes('form')) return 'Form';
+  if (lower.includes('run production') || lower.includes('record')) return 'Offense';
+  if (lower.includes('rest') || lower.includes('availability')) return 'Schedule';
+  if (lower.includes('park')) return 'Context';
   return 'Model';
 }
 
-function statDisplayName(stat: string) {
-  const upper = stat.toUpperCase();
-  if (upper.includes('R/GAME')) return 'Recent run production';
-  if (upper.includes('SP ERA')) return 'Starter run prevention';
-  if (upper.includes('SP WHIP')) return 'Starter traffic prevention';
-  if (upper.includes('SP K/9')) return 'Starter strikeout profile';
-  if (upper.includes('WIN PCT')) return 'Season win percentage';
-  return stat;
+// Maps the slate's model-derived factor groups (real LightGBM importance
+// shares) into the dashboard's ModelFactor shape. Importance is a magnitude,
+// not a per-game direction, so every factor is Neutral until SHAP adds signed
+// per-game attributions via the game `explain` extension point.
+export function factorFromSlate(slateFactor: SlateFactor): ModelFactor {
+  const name = slateFactor.name ?? 'Model factor';
+  const pct = Number(slateFactor.pct ?? 0);
+  const source = slateFactor.source ?? 'model';
+  return {
+    name,
+    description: slateFactor.note ? `${slateFactor.note} — ${source}.` : `${source}.`,
+    impact: Math.round(pct),
+    direction: 'Neutral',
+    category: categoryForFactor(name),
+    exampleSignal: slateFactor.note ?? source,
+    affects: ['Win probability', 'Confidence'],
+  };
 }
 
-function buildDifferentiatingFactors(game: MlbGame, staticGame: StaticSlateGame): ModelFactor[] {
-  const rows = staticGame.stats ?? [];
-  const scoredFactors: Array<{ score: number; factor: ModelFactor }> = [];
-
-  rows.forEach((row) => {
-      const stat = row.stat ?? '';
-      const away = parseNumber(row.away);
-      const home = parseNumber(row.home);
-      if (away === null || home === null) return;
-
-      const lowerIsBetter = /ERA|WHIP/i.test(stat);
-      const awayBetter = lowerIsBetter ? away < home : away > home;
-      const betterSide: 'away' | 'home' = awayBetter ? 'away' : 'home';
-      const diff = Math.abs(away - home);
-      const scale = /WIN PCT/i.test(stat)
-        ? 0.08
-        : /WHIP/i.test(stat)
-          ? 0.12
-          : /ERA/i.test(stat)
-            ? 0.65
-            : /K\/9/i.test(stat)
-              ? 1.7
-              : /R\/GAME/i.test(stat)
-                ? 1.2
-                : 1;
-      const score = diff / scale;
-      const betterTeam = teamLabel(game, betterSide);
-      const worseTeam = teamLabel(game, betterSide === 'away' ? 'home' : 'away');
-      const direction = betterSide === 'home' ? 'Positive' : 'Negative';
-      const name = statDisplayName(stat);
-
-      scoredFactors.push({
-        score,
-        factor: {
-          name,
-          description: `${betterTeam} owns the largest matchup gap in ${name.toLowerCase()}: ${betterSide === 'away' ? row.away : row.home} vs ${betterSide === 'away' ? row.home : row.away} for ${worseTeam}.`,
-          impact: Math.round(Math.min(92, Math.max(44, 48 + score * 18))),
-          direction,
-          category: categoryForStat(stat),
-          exampleSignal: `${row.away} vs ${row.home}`,
-          affects: /R\/GAME|ERA|WHIP|K\/9/i.test(stat)
-            ? ['Win probability', 'Projected score', 'Confidence']
-            : ['Win probability', 'Confidence'],
-        },
-      });
-    });
-
-  const factors = scoredFactors
-    .sort((a, b) => b.score - a.score)
-    .map((item) => item.factor);
-
-  if (factors.length) return factors.slice(0, 3);
-
+function factorsFromSlate(staticGame: StaticSlateGame): ModelFactor[] {
+  const factors = (staticGame.factors ?? [])
+    .filter((f) => typeof f.pct === 'number')
+    .map(factorFromSlate);
+  if (factors.length) return factors;
   return factorsFromDrivers(staticGame.prediction?.drivers ?? []);
+}
+
+export function modelSummaryToFactors(model?: SlateModelSummary): ModelFactor[] {
+  return (model?.factorGroups ?? []).map((group) =>
+    factorFromSlate({ name: group.name, pct: group.pct, source: group.source }),
+  );
 }
 
 function buildModelExplanation(
@@ -243,7 +242,13 @@ export async function fetchModelSlate(date: string): Promise<ModelSlateResult> {
       }
     });
 
-    return { status: 'loaded', predictionsByGamePk };
+    return {
+      status: 'loaded',
+      predictionsByGamePk,
+      provenance: payload.provenance,
+      model: payload.model,
+      generatedAt: payload.generatedAt,
+    };
   } catch (error) {
     return {
       status: 'error',
@@ -262,7 +267,7 @@ export function buildPredictionFromModelSlate(game: MlbGame, staticGame: StaticS
   const confidenceLabel = normalizeConfidence(prediction.confLabel);
   const drivers = prediction.drivers ?? [];
   const confidence = Number(prediction.confidence ?? Math.abs(homeWinProbability - 50) * 2);
-  const topFactors = buildDifferentiatingFactors(game, staticGame);
+  const topFactors = factorsFromSlate(staticGame);
 
   return {
     id: game.id,
@@ -271,7 +276,6 @@ export function buildPredictionFromModelSlate(game: MlbGame, staticGame: StaticS
     time: game.timeET,
     venue: staticGame.game?.venue ?? game.venue,
     status: game.status,
-    weather: staticGame.game?.weather ?? 'Weather from trained slate',
     sourceGame: game,
     awayTeam: {
       ...game.awayTeam,
@@ -294,7 +298,7 @@ export function buildPredictionFromModelSlate(game: MlbGame, staticGame: StaticS
     topFactors: topFactors.length ? topFactors : factorsFromDrivers(drivers),
     riskFactors: [
       'Lineups and late bullpen availability may still change before first pitch.',
-      'Weather, scratches, and market movement can narrow the edge.',
+      'Scratches and market movement can narrow the edge.',
     ],
     explanation: buildModelExplanation(game, staticGame, confidenceLabel, topFactors),
     predictionSource: 'model',

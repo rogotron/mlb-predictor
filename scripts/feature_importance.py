@@ -14,43 +14,32 @@ import argparse
 
 import pandas as pd
 
+from src.models.feature_config import DEFAULT_MODEL_MODE, model_artifact_name
+from src.models.feature_groups import group_name_and_source
 from src.utils.paths import MODEL_DIR
-
-# Human-readable category labels, matched by substring against feature names.
-# Order determines the display order in the report.
-CATEGORIES = [
-    ("Team Rolling Form (L5/L10/L20)",      ["wins_l", "run_diff_l", "avg_runs_for_l", "avg_runs_against_l", "win_pct_l"]),
-    ("SP Traditional — Rolling L3",          ["sp_era_l3", "sp_whip_l3", "sp_k_per_9_l3", "sp_bb_per_9_l3",
-                                               "sp_k_minus_bb_pct_l3", "sp_hr_per_9_l3", "sp_ip_per_start_l3"]),
-    ("SP Traditional — Season-to-Date",      ["sp_era_std", "sp_whip_std", "sp_k_per_9_std", "sp_bb_per_9_std",
-                                               "sp_k_minus_bb_pct_std", "sp_hr_per_9_std", "sp_ip_total_std"]),
-    ("SP Statcast Quality (xwOBA / Whiff)", ["sp_xwoba_against", "sp_whiff_rate", "sp_barrel_rate"]),
-    ("Season-to-Date Team Rates",            ["runs_per_game_std", "ra_per_game_std", "win_pct_home_std", "win_pct_away_std"]),
-    ("Team Batting Statcast",                ["xwoba_off_l", "barrel_rate_off_l"]),
-    ("Lineup Matchup (xwOBA vs Hand / BvP)", ["lineup_xwoba_vs_sp", "bvp_xwoba"]),
-    ("Schedule / Rest",                      ["days_rest"]),
-    ("Park Factors",                         ["pf_runs", "pf_hr"]),
-]
 
 
 def _category(name: str) -> str:
-    for label, patterns in CATEGORIES:
-        if any(p in name for p in patterns):
-            return label
-    return "Other"
+    # Shared with the dashboard's factor grouping so the CLI and UI agree.
+    return group_name_and_source(name)[0]
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", default="home_win",
                         help="Model name: home_win or total_runs (default: home_win)")
+    parser.add_argument("--model-mode", choices=["legacy_full", "pregame_safe"],
+                        default=DEFAULT_MODEL_MODE,
+                        help="Which trained artifact to inspect (default: the deployed mode)")
     parser.add_argument("--top", type=int, default=20,
                         help="Number of top features to show in detail (default: 20)")
     args = parser.parse_args()
 
-    model_path = MODEL_DIR / f"{args.model}_latest.pkl"
+    artifact = model_artifact_name(args.model, args.model_mode)
+    model_path = MODEL_DIR / f"{artifact}_latest.pkl"
     if not model_path.exists():
         raise FileNotFoundError(f"No model at {model_path} — run train_model.py first")
+    print(f"model artifact: {model_path.name}  (mode={args.model_mode})")
 
     model = pd.read_pickle(model_path)
 

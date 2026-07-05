@@ -17,7 +17,6 @@ export interface GamePrediction {
   time: string;
   venue: string;
   status: string;
-  weather: string;
   sourceGame: MlbGame;
   awayTeam: MlbGame['awayTeam'];
   homeTeam: MlbGame['homeTeam'];
@@ -98,7 +97,6 @@ export const modelFactors: ModelFactor[] = [
   factor('Offensive split vs handedness', 'Offense', 74, 'Positive', 'Estimates lineup quality against the probable starter hand using rolling contact quality.', 'Projected lineup carries a stronger split against the opposing starter profile.', ['Win probability', 'Projected score']),
   factor('Recent form', 'Form', 61, 'Positive', 'Captures rolling run differential, plate discipline, and run-prevention stability.', 'Club has stronger two-week run differential and fewer late-inning collapses.', ['Win probability', 'Confidence']),
   factor('Home field / park factor', 'Context', 57, 'Neutral', 'Adjusts for venue, home-field advantage, scoring profile, and travel context.', 'Venue is near neutral but home field adds a small win-probability lift.', ['Win probability', 'Projected score']),
-  factor('Weather impact', 'Weather', 42, 'Negative', 'Placeholder weather adjustment for temperature, wind, humidity, and precipitation risk.', 'Neutral placeholder until park-level weather feed is connected.', ['Projected score', 'Confidence']),
   factor('Injuries / lineup quality', 'Lineup', 66, 'Positive', 'Prototype placeholder for confirmed lineups, injuries, missing regulars, and defensive alignment.', 'Needs confirmed starting lineups and injury feed before this becomes live.', ['Win probability', 'Projected score', 'Confidence']),
   factor('Team offense', 'Offense', 70, 'Positive', 'Blends season-to-date production with recent contact quality and chase profile.', 'Top-half lineup quality is treated as above average in the mock layer.', ['Win probability', 'Projected score']),
   factor('Platoon splits', 'Offense', 64, 'Positive', 'Looks for matchup advantages created by batter handedness and starter profile.', 'Mock prediction gives a small boost when the starter matchup is favorable.', ['Win probability']),
@@ -139,7 +137,7 @@ function buildExplanation(game: Omit<GamePrediction, 'explanation'>) {
   return [
     `The model gives the ${predictedWinner.name} a ${winProbability}% win probability, driven primarily by ${mainFactor.name.toLowerCase()}.`,
     `${predictedWinner.name} also benefits from ${supportFactor.name.toLowerCase()}, which improves the late-game projection if the matchup stays tight.`,
-    `Weather and park effects are currently prototype placeholders, so the forecast keeps the run environment near neutral at ${game.projectedAwayRuns.toFixed(1)} to ${game.projectedHomeRuns.toFixed(1)}.`,
+    `This is a prototype fallback, so the forecast keeps the run environment near neutral at ${game.projectedAwayRuns.toFixed(1)} to ${game.projectedHomeRuns.toFixed(1)}.`,
     `The main offsetting risk is ${riskFactor.toLowerCase()}, which keeps model confidence at ${game.confidenceLabel.toLowerCase()}.`,
   ].join(' ');
 }
@@ -165,7 +163,6 @@ export function generateMockPredictionForGame(game: MlbGame): GamePrediction {
     time: game.timeET,
     venue: game.venue,
     status: game.status,
-    weather: 'Weather feed pending; neutral park/weather placeholder',
     sourceGame: game,
     awayTeam: game.awayTeam,
     homeTeam: game.homeTeam,

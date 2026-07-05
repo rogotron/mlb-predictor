@@ -1,4 +1,4 @@
-import { CloudSun, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import type { GamePrediction } from '../data/mockModelData';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import { TeamIdentity } from './TeamIdentity';
@@ -57,7 +57,6 @@ export function MatchupCard({ game, onView }: { game: GamePrediction; onView: (g
       <div className="mt-4 space-y-2 text-sm text-slate-700">
         <p><strong className="text-slate-950">SP:</strong> {game.awayPitcher} vs {game.homePitcher}</p>
         <p className="flex items-center gap-2"><MapPin size={15} /> {game.time} · {game.venue}</p>
-        <p className="flex items-center gap-2"><CloudSun size={15} /> {game.weather}</p>
       </div>
 
       <div className="mt-5">

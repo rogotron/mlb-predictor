@@ -1,4 +1,4 @@
-import { CloudSun, Shield, TrendingUp } from 'lucide-react';
+import { Shield, TrendingUp } from 'lucide-react';
 import type { GamePrediction } from '../data/mockModelData';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import { FactorImpactList } from './FactorImpactList';
@@ -136,11 +136,10 @@ export function GameDetailPanel({ game }: { game: GamePrediction }) {
         <GameExplanation game={game} />
       </div>
 
-      <section className="grid gap-5 lg:grid-cols-3">
+      <section className="grid gap-5 lg:grid-cols-2">
         {[
           ['Team offense', 'Split-adjusted contact quality favors the club with stronger projected lineup xwOBA.', TrendingUp],
           ['Bullpen comparison', bullpenCopy, Shield],
-          ['Weather and park', `${game.weather}. Venue adjustment is reflected in projected total.`, CloudSun],
         ].map(([title, copy, Icon]) => (
           <article className="glass-card p-5" key={title as string}>
             <Icon className="text-teal-700" size={22} />

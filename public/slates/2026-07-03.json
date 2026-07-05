@@ -1,0 +1,1944 @@
+{
+  "date": "2026-07-03",
+  "count": 6,
+  "games": [
+    {
+      "game": {
+        "gamePk": 824173,
+        "date": "JUL 03, 2026",
+        "reportNo": "RPT-2026-824173",
+        "series": "REGULAR SEASON",
+        "venue": "Daikin Park",
+        "firstPitch": "8:15 PM ET",
+        "weather": "SEE VENUE",
+        "line": "\u2014",
+        "status": "LIVE"
+      },
+      "away": {
+        "full": "Tampa Bay Rays",
+        "abbr": "TB",
+        "record": "51-33",
+        "wPct": ".607",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "5.8",
+        "standing": "1ST",
+        "form": [
+          "L",
+          "L",
+          "W",
+          "W",
+          "W",
+          "W",
+          "W",
+          "W",
+          "W",
+          "W"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 1
+          },
+          {
+            "g": 2,
+            "r": 5
+          },
+          {
+            "g": 3,
+            "r": 5
+          },
+          {
+            "g": 4,
+            "r": 13
+          },
+          {
+            "g": 5,
+            "r": 6
+          },
+          {
+            "g": 6,
+            "r": 4
+          },
+          {
+            "g": 7,
+            "r": 5
+          },
+          {
+            "g": 8,
+            "r": 10
+          },
+          {
+            "g": 9,
+            "r": 4
+          },
+          {
+            "g": 10,
+            "r": 5
+          }
+        ]
+      },
+      "home": {
+        "full": "Houston Astros",
+        "abbr": "HOU",
+        "record": "43-46",
+        "wPct": ".483",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "4.4",
+        "standing": "3RD",
+        "form": [
+          "L",
+          "W",
+          "W",
+          "W",
+          "L",
+          "W",
+          "W",
+          "L",
+          "W",
+          "L"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 2
+          },
+          {
+            "g": 2,
+            "r": 9
+          },
+          {
+            "g": 3,
+            "r": 3
+          },
+          {
+            "g": 4,
+            "r": 2
+          },
+          {
+            "g": 5,
+            "r": 0
+          },
+          {
+            "g": 6,
+            "r": 8
+          },
+          {
+            "g": 7,
+            "r": 7
+          },
+          {
+            "g": 8,
+            "r": 4
+          },
+          {
+            "g": 9,
+            "r": 6
+          },
+          {
+            "g": 10,
+            "r": 3
+          }
+        ]
+      },
+      "prediction": {
+        "winner": "Tampa Bay Rays",
+        "awayProb": 77,
+        "homeProb": 23,
+        "awayRuns": 5.0,
+        "homeRuns": 3.9,
+        "awayScore": 5,
+        "homeScore": 4,
+        "confidence": 54,
+        "confLabel": "MODERATE",
+        "spread": "-1.5",
+        "total": "8.9",
+        "source": "model",
+        "drivers": [
+          "The model makes Tampa Bay Rays the pick at 77% win probability (Tampa Bay Rays 77% / Houston Astros 23%).",
+          "The biggest model drivers are bullpen quality + load and starting pitcher quality: .607 vs .483 overall; Nick Martinez vs Spencer Arrighetti.",
+          "The probable-starter matchup is Nick Martinez for Tampa Bay Rays against Spencer Arrighetti for Houston Astros, with a projected total of 8.9 runs.",
+          "Recent team context has Tampa Bay Rays at 5.8 runs per game over the last 10 and Houston Astros at 4.4, with records of 51-33 and 43-46."
+        ]
+      },
+      "pitchers": {
+        "away": {
+          "name": "Nick Martinez",
+          "hand": "RHP",
+          "era": "2.66",
+          "whip": "1.15",
+          "k9": "5.5",
+          "bb9": "1.6",
+          "rec": "7-2",
+          "gs": "16",
+          "inn": "94.2",
+          "last": "6.0 IP, 4 H, 3 ER, 3 BB, 5 K"
+        },
+        "home": {
+          "name": "Spencer Arrighetti",
+          "hand": "RHP",
+          "era": "4.00",
+          "whip": "1.29",
+          "k9": "9.4",
+          "bb9": "4.6",
+          "rec": "7-4",
+          "gs": "13",
+          "inn": "72.0",
+          "last": "6.0 IP, 6 H, 6 ER, 0 BB, 8 K"
+        }
+      },
+      "stats": [
+        {
+          "stat": "R/GAME (L10)",
+          "away": "5.8",
+          "home": "4.4"
+        },
+        {
+          "stat": "RECORD",
+          "away": "51-33",
+          "home": "43-46"
+        },
+        {
+          "stat": "WIN PCT",
+          "away": ".607",
+          "home": ".483"
+        },
+        {
+          "stat": "SP ERA",
+          "away": "2.66",
+          "home": "4.00"
+        },
+        {
+          "stat": "SP WHIP",
+          "away": "1.15",
+          "home": "1.29"
+        },
+        {
+          "stat": "SP K/9",
+          "away": "5.5",
+          "home": "9.4"
+        },
+        {
+          "stat": "DIV STANDING",
+          "away": "1ST",
+          "home": "3RD"
+        }
+      ],
+      "factors": [
+        {
+          "name": "Starting Pitcher Quality",
+          "pct": 47,
+          "note": "Nick Martinez vs Spencer Arrighetti"
+        },
+        {
+          "name": "Starter Availability",
+          "pct": 11,
+          "note": "LLWWWWWWWW vs LWWWLWWLWL"
+        },
+        {
+          "name": "Recent Form (L10)",
+          "pct": 43,
+          "note": "5.8 vs 4.4 R/G last 10"
+        },
+        {
+          "name": "Run Production",
+          "pct": 40,
+          "note": "Reliever run prevention and recent workload"
+        },
+        {
+          "name": "Bullpen Quality + Load",
+          "pct": 82,
+          "note": ".607 vs .483 overall"
+        },
+        {
+          "name": "Season-to-Date Record",
+          "pct": 13,
+          "note": ".607 vs .483 overall"
+        },
+        {
+          "name": "Win Percentage",
+          "pct": 5,
+          "note": "Standard home field adjustment"
+        },
+        {
+          "name": "Home Field Factor",
+          "pct": 5,
+          "note": "Batter xwOBA vs SP handedness + career BvP"
+        }
+      ],
+      "runDist": [
+        {
+          "r": 0,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 1,
+          "away": 1,
+          "home": 2
+        },
+        {
+          "r": 2,
+          "away": 2,
+          "home": 3
+        },
+        {
+          "r": 3,
+          "away": 3,
+          "home": 4
+        },
+        {
+          "r": 4,
+          "away": 4,
+          "home": 4
+        },
+        {
+          "r": 5,
+          "away": 4,
+          "home": 3
+        },
+        {
+          "r": 6,
+          "away": 3,
+          "home": 2
+        },
+        {
+          "r": 7,
+          "away": 2,
+          "home": 1
+        },
+        {
+          "r": 8,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 9,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 10,
+          "away": 1,
+          "home": 1
+        }
+      ]
+    },
+    {
+      "game": {
+        "gamePk": 824013,
+        "date": "JUL 03, 2026",
+        "reportNo": "RPT-2026-824013",
+        "series": "REGULAR SEASON",
+        "venue": "Angel Stadium",
+        "firstPitch": "9:38 PM ET",
+        "weather": "SEE VENUE",
+        "line": "\u2014",
+        "status": "PREVIEW"
+      },
+      "away": {
+        "full": "Boston Red Sox",
+        "abbr": "BOS",
+        "record": "37-48",
+        "wPct": ".435",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "4.3",
+        "standing": "5TH",
+        "form": [
+          "L",
+          "W",
+          "L",
+          "W",
+          "W",
+          "W",
+          "W",
+          "W",
+          "L",
+          "L"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 2
+          },
+          {
+            "g": 2,
+            "r": 5
+          },
+          {
+            "g": 3,
+            "r": 6
+          },
+          {
+            "g": 4,
+            "r": 6
+          },
+          {
+            "g": 5,
+            "r": 6
+          },
+          {
+            "g": 6,
+            "r": 4
+          },
+          {
+            "g": 7,
+            "r": 5
+          },
+          {
+            "g": 8,
+            "r": 6
+          },
+          {
+            "g": 9,
+            "r": 1
+          },
+          {
+            "g": 10,
+            "r": 2
+          }
+        ]
+      },
+      "home": {
+        "full": "Los Angeles Angels",
+        "abbr": "LAA",
+        "record": "36-52",
+        "wPct": ".409",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "3.9",
+        "standing": "5TH",
+        "form": [
+          "W",
+          "L",
+          "W",
+          "W",
+          "L",
+          "W",
+          "W",
+          "L",
+          "L",
+          "L"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 9
+          },
+          {
+            "g": 2,
+            "r": 1
+          },
+          {
+            "g": 3,
+            "r": 5
+          },
+          {
+            "g": 4,
+            "r": 7
+          },
+          {
+            "g": 5,
+            "r": 3
+          },
+          {
+            "g": 6,
+            "r": 5
+          },
+          {
+            "g": 7,
+            "r": 4
+          },
+          {
+            "g": 8,
+            "r": 2
+          },
+          {
+            "g": 9,
+            "r": 3
+          },
+          {
+            "g": 10,
+            "r": 0
+          }
+        ]
+      },
+      "prediction": {
+        "winner": "Los Angeles Angels",
+        "awayProb": 49,
+        "homeProb": 51,
+        "awayRuns": 4.4,
+        "homeRuns": 4.1,
+        "awayScore": 4,
+        "homeScore": 5,
+        "confidence": 2,
+        "confLabel": "MARGINAL",
+        "spread": "-1.5",
+        "total": "8.5",
+        "source": "model",
+        "drivers": [
+          "The model makes Los Angeles Angels the pick at 51% win probability (Boston Red Sox 49% / Los Angeles Angels 51%).",
+          "The biggest model drivers are bullpen quality + load and starting pitcher quality: .435 vs .409 overall; Jake Bennett vs Reid Detmers.",
+          "The probable-starter matchup is Jake Bennett for Boston Red Sox against Reid Detmers for Los Angeles Angels, with a projected total of 8.5 runs.",
+          "Recent team context has Boston Red Sox at 4.3 runs per game over the last 10 and Los Angeles Angels at 3.9, with records of 37-48 and 36-52."
+        ]
+      },
+      "pitchers": {
+        "away": {
+          "name": "Jake Bennett",
+          "hand": "LHP",
+          "era": "3.27",
+          "whip": "1.06",
+          "k9": "6.8",
+          "bb9": "1.9",
+          "rec": "2-3",
+          "gs": "6",
+          "inn": "33.0",
+          "last": "6.1 IP, 3 H, 1 ER, 2 BB, 3 K"
+        },
+        "home": {
+          "name": "Reid Detmers",
+          "hand": "LHP",
+          "era": "3.88",
+          "whip": "1.06",
+          "k9": "10.1",
+          "bb9": "2.8",
+          "rec": "3-5",
+          "gs": "17",
+          "inn": "99.2",
+          "last": "5.2 IP, 4 H, 2 ER, 3 BB, 8 K"
+        }
+      },
+      "stats": [
+        {
+          "stat": "R/GAME (L10)",
+          "away": "4.3",
+          "home": "3.9"
+        },
+        {
+          "stat": "RECORD",
+          "away": "37-48",
+          "home": "36-52"
+        },
+        {
+          "stat": "WIN PCT",
+          "away": ".435",
+          "home": ".409"
+        },
+        {
+          "stat": "SP ERA",
+          "away": "3.27",
+          "home": "3.88"
+        },
+        {
+          "stat": "SP WHIP",
+          "away": "1.06",
+          "home": "1.06"
+        },
+        {
+          "stat": "SP K/9",
+          "away": "6.8",
+          "home": "10.1"
+        },
+        {
+          "stat": "DIV STANDING",
+          "away": "5TH",
+          "home": "5TH"
+        }
+      ],
+      "factors": [
+        {
+          "name": "Starting Pitcher Quality",
+          "pct": 47,
+          "note": "Jake Bennett vs Reid Detmers"
+        },
+        {
+          "name": "Starter Availability",
+          "pct": 11,
+          "note": "LWLWWWWWLL vs WLWWLWWLLL"
+        },
+        {
+          "name": "Recent Form (L10)",
+          "pct": 43,
+          "note": "4.3 vs 3.9 R/G last 10"
+        },
+        {
+          "name": "Run Production",
+          "pct": 40,
+          "note": "Reliever run prevention and recent workload"
+        },
+        {
+          "name": "Bullpen Quality + Load",
+          "pct": 82,
+          "note": ".435 vs .409 overall"
+        },
+        {
+          "name": "Season-to-Date Record",
+          "pct": 13,
+          "note": ".435 vs .409 overall"
+        },
+        {
+          "name": "Win Percentage",
+          "pct": 5,
+          "note": "Standard home field adjustment"
+        },
+        {
+          "name": "Home Field Factor",
+          "pct": 5,
+          "note": "Batter xwOBA vs SP handedness + career BvP"
+        }
+      ],
+      "runDist": [
+        {
+          "r": 0,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 1,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 2,
+          "away": 2,
+          "home": 3
+        },
+        {
+          "r": 3,
+          "away": 3,
+          "home": 4
+        },
+        {
+          "r": 4,
+          "away": 4,
+          "home": 4
+        },
+        {
+          "r": 5,
+          "away": 3,
+          "home": 3
+        },
+        {
+          "r": 6,
+          "away": 2,
+          "home": 2
+        },
+        {
+          "r": 7,
+          "away": 2,
+          "home": 1
+        },
+        {
+          "r": 8,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 9,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 10,
+          "away": 1,
+          "home": 1
+        }
+      ]
+    },
+    {
+      "game": {
+        "gamePk": 824982,
+        "date": "JUL 03, 2026",
+        "reportNo": "RPT-2026-824982",
+        "series": "REGULAR SEASON",
+        "venue": "Sutter Health Park",
+        "firstPitch": "9:40 PM ET",
+        "weather": "SEE VENUE",
+        "line": "\u2014",
+        "status": "PREVIEW"
+      },
+      "away": {
+        "full": "Miami Marlins",
+        "abbr": "MIA",
+        "record": "46-42",
+        "wPct": ".523",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "5.4",
+        "standing": "3RD",
+        "form": [
+          "L",
+          "W",
+          "W",
+          "W",
+          "W",
+          "L",
+          "W",
+          "W",
+          "L",
+          "L"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 3
+          },
+          {
+            "g": 2,
+            "r": 6
+          },
+          {
+            "g": 3,
+            "r": 4
+          },
+          {
+            "g": 4,
+            "r": 4
+          },
+          {
+            "g": 5,
+            "r": 5
+          },
+          {
+            "g": 6,
+            "r": 1
+          },
+          {
+            "g": 7,
+            "r": 10
+          },
+          {
+            "g": 8,
+            "r": 14
+          },
+          {
+            "g": 9,
+            "r": 3
+          },
+          {
+            "g": 10,
+            "r": 4
+          }
+        ]
+      },
+      "home": {
+        "full": "Athletics",
+        "abbr": "ATH",
+        "record": "41-46",
+        "wPct": ".471",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "4.4",
+        "standing": "4TH",
+        "form": [
+          "L",
+          "L",
+          "L",
+          "W",
+          "W",
+          "L",
+          "L",
+          "L",
+          "L",
+          "W"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 7
+          },
+          {
+            "g": 2,
+            "r": 1
+          },
+          {
+            "g": 3,
+            "r": 1
+          },
+          {
+            "g": 4,
+            "r": 9
+          },
+          {
+            "g": 5,
+            "r": 9
+          },
+          {
+            "g": 6,
+            "r": 2
+          },
+          {
+            "g": 7,
+            "r": 1
+          },
+          {
+            "g": 8,
+            "r": 4
+          },
+          {
+            "g": 9,
+            "r": 3
+          },
+          {
+            "g": 10,
+            "r": 7
+          }
+        ]
+      },
+      "prediction": {
+        "winner": "Athletics",
+        "awayProb": 49,
+        "homeProb": 51,
+        "awayRuns": 5.2,
+        "homeRuns": 4.3,
+        "awayScore": 5,
+        "homeScore": 6,
+        "confidence": 2,
+        "confLabel": "MARGINAL",
+        "spread": "-1.5",
+        "total": "9.5",
+        "source": "model",
+        "drivers": [
+          "The model makes Athletics the pick at 51% win probability (Miami Marlins 49% / Athletics 51%).",
+          "The biggest model drivers are bullpen quality + load and starting pitcher quality: .523 vs .471 overall; Tyler Phillips vs Jack Perkins.",
+          "The probable-starter matchup is Tyler Phillips for Miami Marlins against Jack Perkins for Athletics, with a projected total of 9.5 runs.",
+          "Recent team context has Miami Marlins at 5.4 runs per game over the last 10 and Athletics at 4.4, with records of 46-42 and 41-46."
+        ]
+      },
+      "pitchers": {
+        "away": {
+          "name": "Tyler Phillips",
+          "hand": "RHP",
+          "era": "3.02",
+          "whip": "1.31",
+          "k9": "6.8",
+          "bb9": "4.1",
+          "rec": "1-3",
+          "gs": "6",
+          "inn": "65.2",
+          "last": "7.1 IP, 6 H, 2 ER, 0 BB, 1 K"
+        },
+        "home": {
+          "name": "Jack Perkins",
+          "hand": "RHP",
+          "era": "6.00",
+          "whip": "1.33",
+          "k9": "10.9",
+          "bb9": "3.0",
+          "rec": "2-3",
+          "gs": "5",
+          "inn": "51.0",
+          "last": "5.0 IP, 4 H, 2 ER, 1 BB, 5 K"
+        }
+      },
+      "stats": [
+        {
+          "stat": "R/GAME (L10)",
+          "away": "5.4",
+          "home": "4.4"
+        },
+        {
+          "stat": "RECORD",
+          "away": "46-42",
+          "home": "41-46"
+        },
+        {
+          "stat": "WIN PCT",
+          "away": ".523",
+          "home": ".471"
+        },
+        {
+          "stat": "SP ERA",
+          "away": "3.02",
+          "home": "6.00"
+        },
+        {
+          "stat": "SP WHIP",
+          "away": "1.31",
+          "home": "1.33"
+        },
+        {
+          "stat": "SP K/9",
+          "away": "6.8",
+          "home": "10.9"
+        },
+        {
+          "stat": "DIV STANDING",
+          "away": "3RD",
+          "home": "4TH"
+        }
+      ],
+      "factors": [
+        {
+          "name": "Starting Pitcher Quality",
+          "pct": 47,
+          "note": "Tyler Phillips vs Jack Perkins"
+        },
+        {
+          "name": "Starter Availability",
+          "pct": 11,
+          "note": "LWWWWLWWLL vs LLLWWLLLLW"
+        },
+        {
+          "name": "Recent Form (L10)",
+          "pct": 43,
+          "note": "5.4 vs 4.4 R/G last 10"
+        },
+        {
+          "name": "Run Production",
+          "pct": 40,
+          "note": "Reliever run prevention and recent workload"
+        },
+        {
+          "name": "Bullpen Quality + Load",
+          "pct": 82,
+          "note": ".523 vs .471 overall"
+        },
+        {
+          "name": "Season-to-Date Record",
+          "pct": 13,
+          "note": ".523 vs .471 overall"
+        },
+        {
+          "name": "Win Percentage",
+          "pct": 5,
+          "note": "Standard home field adjustment"
+        },
+        {
+          "name": "Home Field Factor",
+          "pct": 5,
+          "note": "Batter xwOBA vs SP handedness + career BvP"
+        }
+      ],
+      "runDist": [
+        {
+          "r": 0,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 1,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 2,
+          "away": 1,
+          "home": 3
+        },
+        {
+          "r": 3,
+          "away": 3,
+          "home": 4
+        },
+        {
+          "r": 4,
+          "away": 3,
+          "home": 4
+        },
+        {
+          "r": 5,
+          "away": 3,
+          "home": 3
+        },
+        {
+          "r": 6,
+          "away": 3,
+          "home": 2
+        },
+        {
+          "r": 7,
+          "away": 2,
+          "home": 1
+        },
+        {
+          "r": 8,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 9,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 10,
+          "away": 1,
+          "home": 1
+        }
+      ]
+    },
+    {
+      "game": {
+        "gamePk": 825062,
+        "date": "JUL 03, 2026",
+        "reportNo": "RPT-2026-825062",
+        "series": "REGULAR SEASON",
+        "venue": "Chase Field",
+        "firstPitch": "9:45 PM ET",
+        "weather": "SEE VENUE",
+        "line": "\u2014",
+        "status": "PREVIEW"
+      },
+      "away": {
+        "full": "Milwaukee Brewers",
+        "abbr": "MIL",
+        "record": "53-32",
+        "wPct": ".624",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "3.9",
+        "standing": "1ST",
+        "form": [
+          "W",
+          "W",
+          "W",
+          "W",
+          "L",
+          "L",
+          "W",
+          "W",
+          "W",
+          "L"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 2
+          },
+          {
+            "g": 2,
+            "r": 2
+          },
+          {
+            "g": 3,
+            "r": 6
+          },
+          {
+            "g": 4,
+            "r": 6
+          },
+          {
+            "g": 5,
+            "r": 2
+          },
+          {
+            "g": 6,
+            "r": 3
+          },
+          {
+            "g": 7,
+            "r": 5
+          },
+          {
+            "g": 8,
+            "r": 7
+          },
+          {
+            "g": 9,
+            "r": 4
+          },
+          {
+            "g": 10,
+            "r": 2
+          }
+        ]
+      },
+      "home": {
+        "full": "Arizona Diamondbacks",
+        "abbr": "AZ",
+        "record": "43-43",
+        "wPct": ".500",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "3.8",
+        "standing": "2ND",
+        "form": [
+          "L",
+          "L",
+          "W",
+          "W",
+          "L",
+          "L",
+          "L",
+          "W",
+          "W",
+          "L"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 2
+          },
+          {
+            "g": 2,
+            "r": 2
+          },
+          {
+            "g": 3,
+            "r": 4
+          },
+          {
+            "g": 4,
+            "r": 9
+          },
+          {
+            "g": 5,
+            "r": 1
+          },
+          {
+            "g": 6,
+            "r": 2
+          },
+          {
+            "g": 7,
+            "r": 1
+          },
+          {
+            "g": 8,
+            "r": 5
+          },
+          {
+            "g": 9,
+            "r": 8
+          },
+          {
+            "g": 10,
+            "r": 4
+          }
+        ]
+      },
+      "prediction": {
+        "winner": "Milwaukee Brewers",
+        "awayProb": 50,
+        "homeProb": 50,
+        "awayRuns": 5.1,
+        "homeRuns": 4.9,
+        "awayScore": 5,
+        "homeScore": 5,
+        "confidence": 0,
+        "confLabel": "MARGINAL",
+        "spread": "-1.5",
+        "total": "10.0",
+        "source": "model",
+        "drivers": [
+          "The model makes Milwaukee Brewers the pick at 50% win probability (Milwaukee Brewers 50% / Arizona Diamondbacks 50%).",
+          "The biggest model drivers are bullpen quality + load and starting pitcher quality: .624 vs .500 overall; Kyle Harrison vs Jose Cabrera.",
+          "The probable-starter matchup is Kyle Harrison for Milwaukee Brewers against Jose Cabrera for Arizona Diamondbacks, with a projected total of 10.0 runs.",
+          "Recent team context has Milwaukee Brewers at 3.9 runs per game over the last 10 and Arizona Diamondbacks at 3.8, with records of 53-32 and 43-43."
+        ]
+      },
+      "pitchers": {
+        "away": {
+          "name": "Kyle Harrison",
+          "hand": "LHP",
+          "era": "2.57",
+          "whip": "1.04",
+          "k9": "11.2",
+          "bb9": "2.2",
+          "rec": "8-1",
+          "gs": "15",
+          "inn": "77.0",
+          "last": "5.0 IP, 3 H, 2 ER, 1 BB, 9 K"
+        },
+        "home": {
+          "name": "Jose Cabrera",
+          "hand": "RHP",
+          "era": "3.60",
+          "whip": "1.20",
+          "k9": "6.3",
+          "bb9": "1.8",
+          "rec": "0-1",
+          "gs": "2",
+          "inn": "10.0",
+          "last": "5.0 IP, 7 H, 4 ER, 2 BB, 4 K"
+        }
+      },
+      "stats": [
+        {
+          "stat": "R/GAME (L10)",
+          "away": "3.9",
+          "home": "3.8"
+        },
+        {
+          "stat": "RECORD",
+          "away": "53-32",
+          "home": "43-43"
+        },
+        {
+          "stat": "WIN PCT",
+          "away": ".624",
+          "home": ".500"
+        },
+        {
+          "stat": "SP ERA",
+          "away": "2.57",
+          "home": "3.60"
+        },
+        {
+          "stat": "SP WHIP",
+          "away": "1.04",
+          "home": "1.20"
+        },
+        {
+          "stat": "SP K/9",
+          "away": "11.2",
+          "home": "6.3"
+        },
+        {
+          "stat": "DIV STANDING",
+          "away": "1ST",
+          "home": "2ND"
+        }
+      ],
+      "factors": [
+        {
+          "name": "Starting Pitcher Quality",
+          "pct": 47,
+          "note": "Kyle Harrison vs Jose Cabrera"
+        },
+        {
+          "name": "Starter Availability",
+          "pct": 11,
+          "note": "WWWWLLWWWL vs LLWWLLLWWL"
+        },
+        {
+          "name": "Recent Form (L10)",
+          "pct": 43,
+          "note": "3.9 vs 3.8 R/G last 10"
+        },
+        {
+          "name": "Run Production",
+          "pct": 40,
+          "note": "Reliever run prevention and recent workload"
+        },
+        {
+          "name": "Bullpen Quality + Load",
+          "pct": 82,
+          "note": ".624 vs .500 overall"
+        },
+        {
+          "name": "Season-to-Date Record",
+          "pct": 13,
+          "note": ".624 vs .500 overall"
+        },
+        {
+          "name": "Win Percentage",
+          "pct": 5,
+          "note": "Standard home field adjustment"
+        },
+        {
+          "name": "Home Field Factor",
+          "pct": 5,
+          "note": "Batter xwOBA vs SP handedness + career BvP"
+        }
+      ],
+      "runDist": [
+        {
+          "r": 0,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 1,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 2,
+          "away": 2,
+          "home": 2
+        },
+        {
+          "r": 3,
+          "away": 3,
+          "home": 3
+        },
+        {
+          "r": 4,
+          "away": 3,
+          "home": 4
+        },
+        {
+          "r": 5,
+          "away": 4,
+          "home": 4
+        },
+        {
+          "r": 6,
+          "away": 3,
+          "home": 3
+        },
+        {
+          "r": 7,
+          "away": 2,
+          "home": 2
+        },
+        {
+          "r": 8,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 9,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 10,
+          "away": 1,
+          "home": 1
+        }
+      ]
+    },
+    {
+      "game": {
+        "gamePk": 823120,
+        "date": "JUL 03, 2026",
+        "reportNo": "RPT-2026-823120",
+        "series": "REGULAR SEASON",
+        "venue": "T-Mobile Park",
+        "firstPitch": "10:10 PM ET",
+        "weather": "SEE VENUE",
+        "line": "\u2014",
+        "status": "PREVIEW"
+      },
+      "away": {
+        "full": "Toronto Blue Jays",
+        "abbr": "TOR",
+        "record": "41-46",
+        "wPct": ".471",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "3.8",
+        "standing": "3RD",
+        "form": [
+          "W",
+          "L",
+          "L",
+          "L",
+          "L",
+          "L",
+          "L",
+          "W",
+          "L",
+          "W"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 4
+          },
+          {
+            "g": 2,
+            "r": 7
+          },
+          {
+            "g": 3,
+            "r": 1
+          },
+          {
+            "g": 4,
+            "r": 5
+          },
+          {
+            "g": 5,
+            "r": 4
+          },
+          {
+            "g": 6,
+            "r": 4
+          },
+          {
+            "g": 7,
+            "r": 2
+          },
+          {
+            "g": 8,
+            "r": 2
+          },
+          {
+            "g": 9,
+            "r": 0
+          },
+          {
+            "g": 10,
+            "r": 9
+          }
+        ]
+      },
+      "home": {
+        "full": "Seattle Mariners",
+        "abbr": "SEA",
+        "record": "45-43",
+        "wPct": ".511",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "3.4",
+        "standing": "2ND",
+        "form": [
+          "W",
+          "W",
+          "L",
+          "L",
+          "W",
+          "L",
+          "L",
+          "W",
+          "W",
+          "W"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 3
+          },
+          {
+            "g": 2,
+            "r": 3
+          },
+          {
+            "g": 3,
+            "r": 1
+          },
+          {
+            "g": 4,
+            "r": 1
+          },
+          {
+            "g": 5,
+            "r": 3
+          },
+          {
+            "g": 6,
+            "r": 3
+          },
+          {
+            "g": 7,
+            "r": 5
+          },
+          {
+            "g": 8,
+            "r": 6
+          },
+          {
+            "g": 9,
+            "r": 8
+          },
+          {
+            "g": 10,
+            "r": 1
+          }
+        ]
+      },
+      "prediction": {
+        "winner": "Seattle Mariners",
+        "awayProb": 49,
+        "homeProb": 51,
+        "awayRuns": 4.4,
+        "homeRuns": 4.0,
+        "awayScore": 4,
+        "homeScore": 5,
+        "confidence": 2,
+        "confLabel": "MARGINAL",
+        "spread": "-1.5",
+        "total": "8.4",
+        "source": "model",
+        "drivers": [
+          "The model makes Seattle Mariners the pick at 51% win probability (Toronto Blue Jays 49% / Seattle Mariners 51%).",
+          "The biggest model drivers are bullpen quality + load and starting pitcher quality: .471 vs .511 overall; Dylan Cease vs Luis Castillo.",
+          "The probable-starter matchup is Dylan Cease for Toronto Blue Jays against Luis Castillo for Seattle Mariners, with a projected total of 8.4 runs.",
+          "Recent team context has Toronto Blue Jays at 3.8 runs per game over the last 10 and Seattle Mariners at 3.4, with records of 41-46 and 45-43."
+        ]
+      },
+      "pitchers": {
+        "away": {
+          "name": "Dylan Cease",
+          "hand": "RHP",
+          "era": "3.02",
+          "whip": "1.24",
+          "k9": "13.8",
+          "bb9": "4.3",
+          "rec": "4-4",
+          "gs": "15",
+          "inn": "83.1",
+          "last": "4.2 IP, 4 H, 4 ER, 5 BB, 10 K"
+        },
+        "home": {
+          "name": "Luis Castillo",
+          "hand": "RHP",
+          "era": "4.93",
+          "whip": "1.36",
+          "k9": "8.6",
+          "bb9": "3.0",
+          "rec": "3-6",
+          "gs": "13",
+          "inn": "76.2",
+          "last": "6.0 IP, 4 H, 1 ER, 1 BB, 4 K"
+        }
+      },
+      "stats": [
+        {
+          "stat": "R/GAME (L10)",
+          "away": "3.8",
+          "home": "3.4"
+        },
+        {
+          "stat": "RECORD",
+          "away": "41-46",
+          "home": "45-43"
+        },
+        {
+          "stat": "WIN PCT",
+          "away": ".471",
+          "home": ".511"
+        },
+        {
+          "stat": "SP ERA",
+          "away": "3.02",
+          "home": "4.93"
+        },
+        {
+          "stat": "SP WHIP",
+          "away": "1.24",
+          "home": "1.36"
+        },
+        {
+          "stat": "SP K/9",
+          "away": "13.8",
+          "home": "8.6"
+        },
+        {
+          "stat": "DIV STANDING",
+          "away": "3RD",
+          "home": "2ND"
+        }
+      ],
+      "factors": [
+        {
+          "name": "Starting Pitcher Quality",
+          "pct": 47,
+          "note": "Dylan Cease vs Luis Castillo"
+        },
+        {
+          "name": "Starter Availability",
+          "pct": 11,
+          "note": "WLLLLLLWLW vs WWLLWLLWWW"
+        },
+        {
+          "name": "Recent Form (L10)",
+          "pct": 43,
+          "note": "3.8 vs 3.4 R/G last 10"
+        },
+        {
+          "name": "Run Production",
+          "pct": 40,
+          "note": "Reliever run prevention and recent workload"
+        },
+        {
+          "name": "Bullpen Quality + Load",
+          "pct": 82,
+          "note": ".471 vs .511 overall"
+        },
+        {
+          "name": "Season-to-Date Record",
+          "pct": 13,
+          "note": ".471 vs .511 overall"
+        },
+        {
+          "name": "Win Percentage",
+          "pct": 5,
+          "note": "Standard home field adjustment"
+        },
+        {
+          "name": "Home Field Factor",
+          "pct": 5,
+          "note": "Batter xwOBA vs SP handedness + career BvP"
+        }
+      ],
+      "runDist": [
+        {
+          "r": 0,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 1,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 2,
+          "away": 2,
+          "home": 3
+        },
+        {
+          "r": 3,
+          "away": 3,
+          "home": 4
+        },
+        {
+          "r": 4,
+          "away": 4,
+          "home": 4
+        },
+        {
+          "r": 5,
+          "away": 3,
+          "home": 3
+        },
+        {
+          "r": 6,
+          "away": 2,
+          "home": 2
+        },
+        {
+          "r": 7,
+          "away": 2,
+          "home": 1
+        },
+        {
+          "r": 8,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 9,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 10,
+          "away": 1,
+          "home": 1
+        }
+      ]
+    },
+    {
+      "game": {
+        "gamePk": 823933,
+        "date": "JUL 03, 2026",
+        "reportNo": "RPT-2026-823933",
+        "series": "REGULAR SEASON",
+        "venue": "UNIQLO Field at Dodger Stadium",
+        "firstPitch": "10:10 PM ET",
+        "weather": "SEE VENUE",
+        "line": "\u2014",
+        "status": "PREVIEW"
+      },
+      "away": {
+        "full": "San Diego Padres",
+        "abbr": "SD",
+        "record": "43-43",
+        "wPct": ".500",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "4.4",
+        "standing": "3RD",
+        "form": [
+          "W",
+          "W",
+          "W",
+          "W",
+          "L",
+          "L",
+          "L",
+          "L",
+          "L",
+          "L"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 1
+          },
+          {
+            "g": 2,
+            "r": 7
+          },
+          {
+            "g": 3,
+            "r": 5
+          },
+          {
+            "g": 4,
+            "r": 7
+          },
+          {
+            "g": 5,
+            "r": 3
+          },
+          {
+            "g": 6,
+            "r": 2
+          },
+          {
+            "g": 7,
+            "r": 2
+          },
+          {
+            "g": 8,
+            "r": 7
+          },
+          {
+            "g": 9,
+            "r": 3
+          },
+          {
+            "g": 10,
+            "r": 7
+          }
+        ]
+      },
+      "home": {
+        "full": "Los Angeles Dodgers",
+        "abbr": "LAD",
+        "record": "57-31",
+        "wPct": ".648",
+        "division": "\u2014",
+        "elo": "\u2014",
+        "runsPerG": "6.9",
+        "standing": "1ST",
+        "form": [
+          "W",
+          "W",
+          "W",
+          "L",
+          "W",
+          "W",
+          "W",
+          "W",
+          "L",
+          "W"
+        ],
+        "spark": [
+          {
+            "g": 1,
+            "r": 2
+          },
+          {
+            "g": 2,
+            "r": 12
+          },
+          {
+            "g": 3,
+            "r": 4
+          },
+          {
+            "g": 4,
+            "r": 1
+          },
+          {
+            "g": 5,
+            "r": 15
+          },
+          {
+            "g": 6,
+            "r": 4
+          },
+          {
+            "g": 7,
+            "r": 9
+          },
+          {
+            "g": 8,
+            "r": 9
+          },
+          {
+            "g": 9,
+            "r": 1
+          },
+          {
+            "g": 10,
+            "r": 12
+          }
+        ]
+      },
+      "prediction": {
+        "winner": "Los Angeles Dodgers",
+        "awayProb": 36,
+        "homeProb": 64,
+        "awayRuns": 4.0,
+        "homeRuns": 6.3,
+        "awayScore": 4,
+        "homeScore": 6,
+        "confidence": 27,
+        "confLabel": "LOW",
+        "spread": "-1.5",
+        "total": "10.3",
+        "source": "model",
+        "drivers": [
+          "The model makes Los Angeles Dodgers the pick at 64% win probability (San Diego Padres 36% / Los Angeles Dodgers 64%).",
+          "The biggest model drivers are bullpen quality + load and starting pitcher quality: .500 vs .648 overall; Michael King vs Shohei Ohtani.",
+          "The probable-starter matchup is Michael King for San Diego Padres against Shohei Ohtani for Los Angeles Dodgers, with a projected total of 10.3 runs.",
+          "Recent team context has San Diego Padres at 4.4 runs per game over the last 10 and Los Angeles Dodgers at 6.9, with records of 43-43 and 57-31."
+        ]
+      },
+      "pitchers": {
+        "away": {
+          "name": "Michael King",
+          "hand": "RHP",
+          "era": "3.55",
+          "whip": "1.18",
+          "k9": "7.8",
+          "bb9": "3.6",
+          "rec": "5-7",
+          "gs": "17",
+          "inn": "96.1",
+          "last": "4.1 IP, 3 H, 4 ER, 4 BB, 5 K"
+        },
+        "home": {
+          "name": "Shohei Ohtani",
+          "hand": "RHP",
+          "era": "1.58",
+          "whip": "0.90",
+          "k9": "9.7",
+          "bb9": "2.7",
+          "rec": "8-2",
+          "gs": "13",
+          "inn": "79.2",
+          "last": "6.0 IP, 5 H, 2 ER, 2 BB, 8 K"
+        }
+      },
+      "stats": [
+        {
+          "stat": "R/GAME (L10)",
+          "away": "4.4",
+          "home": "6.9"
+        },
+        {
+          "stat": "RECORD",
+          "away": "43-43",
+          "home": "57-31"
+        },
+        {
+          "stat": "WIN PCT",
+          "away": ".500",
+          "home": ".648"
+        },
+        {
+          "stat": "SP ERA",
+          "away": "3.55",
+          "home": "1.58"
+        },
+        {
+          "stat": "SP WHIP",
+          "away": "1.18",
+          "home": "0.90"
+        },
+        {
+          "stat": "SP K/9",
+          "away": "7.8",
+          "home": "9.7"
+        },
+        {
+          "stat": "DIV STANDING",
+          "away": "3RD",
+          "home": "1ST"
+        }
+      ],
+      "factors": [
+        {
+          "name": "Starting Pitcher Quality",
+          "pct": 47,
+          "note": "Michael King vs Shohei Ohtani"
+        },
+        {
+          "name": "Starter Availability",
+          "pct": 11,
+          "note": "WWWWLLLLLL vs WWWLWWWWLW"
+        },
+        {
+          "name": "Recent Form (L10)",
+          "pct": 43,
+          "note": "4.4 vs 6.9 R/G last 10"
+        },
+        {
+          "name": "Run Production",
+          "pct": 40,
+          "note": "Reliever run prevention and recent workload"
+        },
+        {
+          "name": "Bullpen Quality + Load",
+          "pct": 82,
+          "note": ".500 vs .648 overall"
+        },
+        {
+          "name": "Season-to-Date Record",
+          "pct": 13,
+          "note": ".500 vs .648 overall"
+        },
+        {
+          "name": "Win Percentage",
+          "pct": 5,
+          "note": "Standard home field adjustment"
+        },
+        {
+          "name": "Home Field Factor",
+          "pct": 5,
+          "note": "Batter xwOBA vs SP handedness + career BvP"
+        }
+      ],
+      "runDist": [
+        {
+          "r": 0,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 1,
+          "away": 1,
+          "home": 1
+        },
+        {
+          "r": 2,
+          "away": 3,
+          "home": 1
+        },
+        {
+          "r": 3,
+          "away": 4,
+          "home": 2
+        },
+        {
+          "r": 4,
+          "away": 4,
+          "home": 2
+        },
+        {
+          "r": 5,
+          "away": 3,
+          "home": 3
+        },
+        {
+          "r": 6,
+          "away": 2,
+          "home": 3
+        },
+        {
+          "r": 7,
+          "away": 1,
+          "home": 3
+        },
+        {
+          "r": 8,
+          "away": 1,
+          "home": 2
+        },
+        {
+          "r": 9,
+          "away": 1,
+          "home": 2
+        },
+        {
+          "r": 10,
+          "away": 1,
+          "home": 1
+        }
+      ]
+    }
+  ]
+}

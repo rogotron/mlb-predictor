@@ -1,0 +1,101 @@
+{
+  "targetDate": "2026-07-05",
+  "startedAt": "2026-07-05T10:52:20.628756-04:00",
+  "finishedAt": "2026-07-05T10:56:51.817932-04:00",
+  "ok": true,
+  "steps": [
+    {
+      "name": "schedule+ingest+gamelogs",
+      "status": "ok"
+    },
+    {
+      "name": "statcast",
+      "status": "ok",
+      "monthsFetched": 5,
+      "pitches": 430806,
+      "errors": 0
+    },
+    {
+      "name": "slate",
+      "status": "ok",
+      "games": 15
+    }
+  ],
+  "dateRange": {
+    "start": "2026-03-15",
+    "end": "2026-07-04"
+  },
+  "provenance": {
+    "dataAsOf": "2026-07-05T10:56:51.616525-04:00",
+    "targetDate": "2026-07-05",
+    "gameCount": null,
+    "dateRange": {
+      "start": "2026-03-15",
+      "end": "2026-07-04"
+    },
+    "anyStale": false,
+    "anyMissing": false,
+    "sources": [
+      {
+        "key": "schedule",
+        "label": "MLB schedule & scores (final)",
+        "status": "ok",
+        "rows": 1256,
+        "minDate": "2026-04-01",
+        "maxDate": "2026-07-04",
+        "daysBehind": 1,
+        "stale": false
+      },
+      {
+        "key": "processed_games",
+        "label": "Processed game logs",
+        "status": "ok",
+        "rows": 1256,
+        "minDate": "2026-04-01",
+        "maxDate": "2026-07-04",
+        "daysBehind": 1,
+        "stale": false
+      },
+      {
+        "key": "pitching_gamelogs",
+        "label": "Starting-pitcher gamelogs",
+        "status": "ok",
+        "rows": 2511,
+        "minDate": "2026-04-01",
+        "maxDate": "2026-07-04",
+        "daysBehind": 1,
+        "stale": false
+      },
+      {
+        "key": "statcast",
+        "label": "Statcast pitches",
+        "status": "ok",
+        "rows": 430806,
+        "minDate": "2026-03-15",
+        "maxDate": "2026-07-04",
+        "daysBehind": 1,
+        "stale": false
+      },
+      {
+        "key": "weather",
+        "label": "Weather",
+        "status": "not_collected",
+        "rows": 0,
+        "minDate": null,
+        "maxDate": null,
+        "daysBehind": null,
+        "stale": false
+      },
+      {
+        "key": "umpire",
+        "label": "Umpire tendencies",
+        "status": "not_collected",
+        "rows": 0,
+        "minDate": null,
+        "maxDate": null,
+        "daysBehind": null,
+        "stale": false
+      }
+    ]
+  }
+}

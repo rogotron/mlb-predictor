@@ -71,7 +71,7 @@ The pregame-safe list lives in `data/processed/leakage_safe_feature_cols.json`, 
 - New model → sibling in `src/models/`. Always save with versioned filename: `models/{model_name}_{YYYYMMDD}.pkl` plus a `models/{model_name}_latest.pkl`.
 - New data source → new module in `src/data/`. Must implement a `fetch(start, end) -> DataFrame` and write to `data/raw/{source}/`.
 - New script → `scripts/`. Scripts are thin: parse args, call `src/`, print/save.
-- Add new feature columns to `FEATURE_COLS` in `src/models/train.py`, classify them in `diagnostics/feature_inventory.csv` (`leakage_risk` + `safe_before_first_pitch`) so they can enter `pregame_safe`, AND add them to `_FACTOR_COLS` in `backend/services/assemble.py` so the dashboard reflects them. A feature missing from the inventory never reaches the default model.
+- Add new feature columns to `FEATURE_COLS` in `src/models/train.py`, classify them in `diagnostics/feature_inventory.csv` (`leakage_risk` + `safe_before_first_pitch`) so they can enter `pregame_safe`, AND map them to a factor group in `FACTOR_GROUPS` in `src/models/feature_groups.py` so the dashboard, the feature-importance CLI, and the training importance artifact all reflect them consistently. A feature missing from the inventory never reaches the default model; a feature missing from `FACTOR_GROUPS` lands in the "Other model features" bucket.
 
 ## Don't do this
 
@@ -122,11 +122,14 @@ python scripts/train_model.py --model-mode legacy_full   # train the 169-feature
 python scripts/tune_hyperparams.py              # grid-search LightGBM params
 python scripts/predict_today.py                 # today's slate predictions
 python scripts/backtest_leakage_safe_comparison.py  # pregame_safe vs legacy vs baselines
+python scripts/refresh_all.py                   # ONE-COMMAND daily refresh: schedule+ingest+gamelogs+statcast+slate, writes refresh_manifest.json, non-zero exit on failure (--skip-slate for data only)
 python scripts/build_static_slate.py --date 2026-06-24  # write public/slates/{date}.json for the React dashboard; auto-refreshes schedule/processed/gamelog caches first (--skip-refresh to opt out)
-python scripts/build_dashboard_data.py --team 147  # regenerate Yankees dashboard JSON
-python scripts/feature_importance.py            # ranked feature importance report
+python scripts/build_dashboard_data.py --team 147  # regenerate Yankees dashboard JSON (legacy single-game path; not read by the React app)
+python scripts/feature_importance.py            # ranked feature importance report (deployed pregame_safe model; --model-mode legacy_full for the 169-feat model)
 ```
 
 ## Dashboard serving
 
 The React/Vite dashboard (root `src/App.tsx`, "Diamond Forecast") reads predictions from **static JSON at `public/slates/{date}.json`** (written by `scripts/build_static_slate.py`) plus the live MLB schedule API — it does **not** call the FastAPI backend, and falls back to mock data in `src/data/mockModelData.ts` when no slate exists. The FastAPI backend (`backend/`, `/api/predictions/*`) is a separate, richer live-pipeline serving path. Note: the Python package and the React app both live under `src/`.
+
+The slate JSON is the single artifact the dashboard trusts. Besides `games`, it carries a top-level `provenance` block (per-source row counts, covered date range, freshness/stale flags; weather and umpire are reported `not_collected` because the model does not use them) and a `model` block (real LightGBM importances by factor group). The dashboard's `ProvenanceBar`, Factors tab, and per-game "top drivers" all read these — no hardcoded factor lists, and the "Updated" timestamp comes from `provenance.dataAsOf`, not the browser clock. Each game object has an `explain: {shap: null}` extension point reserved for future per-game SHAP (TreeExplainer) attributions.

@@ -6,6 +6,7 @@ regressor for total_runs. Easy to swap.
 
 from __future__ import annotations
 
+import json
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -23,8 +24,61 @@ from src.models.feature_config import (
     model_artifact_name,
     validate_model_mode,
 )
+from src.models.feature_groups import group_importances, group_name_and_source
 
 logger = logging.getLogger(__name__)
+
+
+def write_feature_importance_artifact(
+    model,
+    name: str,
+    model_mode: str,
+    model_dir: Path,
+) -> Path:
+    """Write models/feature_importance_{artifact}.json for dashboard/CLI use.
+
+    Captures the real LightGBM split-gain importances at train time — feature
+    name, gain, share, and source group — so factor transparency always
+    reflects the deployed model rather than a hand-maintained list.
+    """
+    names = list(getattr(model, "feature_name_", []) or [])
+    gains = [float(g) for g in getattr(model, "feature_importances_", [])]
+    total = sum(gains) or 1.0
+
+    features = sorted(
+        (
+            {
+                "feature": feat,
+                "gain": gain,
+                "pct": round(gain / total * 100, 3),
+                "group": group_name_and_source(feat)[0],
+                "source": group_name_and_source(feat)[1],
+            }
+            for feat, gain in zip(names, gains, strict=False)
+        ),
+        key=lambda row: row["gain"],
+        reverse=True,
+    )
+    groups, _ = group_importances(names, gains)
+
+    artifact = model_artifact_name(name, model_mode)
+    out_path = model_dir / f"feature_importance_{artifact}.json"
+    payload = {
+        "model": name,
+        "mode": model_mode,
+        "featureCount": len(names),
+        "importanceMetric": "lightgbm_split_gain",
+        "generatedAt": datetime.now().isoformat(),
+        "groups": [
+            {"name": g["name"], "source": g["source"], "pct": g["pct"]}
+            for g in groups
+        ],
+        "features": features,
+    }
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    logger.info("wrote feature importance artifact %s", out_path)
+    return out_path
 
 # Team rolling features (30)
 _TEAM_FEATURE_COLS = [
@@ -309,6 +363,8 @@ def train_home_win_model(
     latest_path = model_dir / f"{artifact}_latest.pkl"
     pd.to_pickle(model, latest_path)
 
+    write_feature_importance_artifact(model, "home_win", model_mode, model_dir)
+
     return {
         "model_path": str(model_path),
         "model_mode": model_mode,
@@ -377,6 +433,8 @@ def train_total_runs_model(
     # Also save as "latest"
     latest_path = model_dir / f"{artifact}_latest.pkl"
     pd.to_pickle(model, latest_path)
+
+    write_feature_importance_artifact(model, "total_runs", model_mode, model_dir)
 
     return {
         "model_path": str(model_path),

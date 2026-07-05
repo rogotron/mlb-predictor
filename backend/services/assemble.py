@@ -21,6 +21,7 @@ from src.data.pitching_gamelogs import _add_per_start_rates, load_pitching_gamel
 from src.data.update import SCHEDULE_TIMEZONE, fetch_today_slate
 from src.models.audit import append_prediction_audit
 from src.models.feature_config import DEFAULT_MODEL_MODE
+from src.models.feature_groups import OTHER_GROUP, group_importances
 from src.models.predict import load_latest_model, predict_slate
 from src.models.pregame import build_pregame_prediction_features
 from src.utils.paths import MODEL_DIR, PROCESSED_DIR, RAW_DIR
@@ -145,79 +146,59 @@ def _fetch_pitcher_info(pid: int | None, name: str, gamelogs: pd.DataFrame, seas
 # Factor importance
 # ---------------------------------------------------------------------------
 
-# Maps factor label → feature columns that drive it
-_FACTOR_COLS: list[tuple[str, list[str]]] = [
-    ("Starting Pitcher Quality", [
-        "home_sp_era_l3", "away_sp_era_l3",
-        "home_sp_whip_l3", "away_sp_whip_l3",
-        "home_sp_era_std", "away_sp_era_std",
-        "home_sp_xwoba_against_l3", "away_sp_xwoba_against_l3",
-        "home_sp_whiff_rate_l3", "away_sp_whiff_rate_l3",
-        "home_sp_barrel_rate_l3", "away_sp_barrel_rate_l3",
-        "home_sp_k_minus_bb_pct_l3", "away_sp_k_minus_bb_pct_l3",
-        "home_sp_k_minus_bb_pct_std", "away_sp_k_minus_bb_pct_std",
-    ]),
-    ("Starter Availability", [
-        "home_sp_days_rest", "away_sp_days_rest",
-        "home_sp_season_starts_prior", "away_sp_season_starts_prior",
-        "home_sp_recent_starts_l60d", "away_sp_recent_starts_l60d",
-        "home_sp_short_history", "away_sp_short_history",
-        "home_sp_unknown", "away_sp_unknown",
-    ]),
-    ("Recent Form (L10)", [
-        "home_wins_l10", "away_wins_l10",
-        "home_run_diff_l10", "away_run_diff_l10",
-        "home_xwoba_off_l10", "away_xwoba_off_l10",
-        "home_barrel_rate_off_l10", "away_barrel_rate_off_l10",
-    ]),
-    ("Run Production", [
-        "home_avg_runs_for_l10", "away_avg_runs_for_l10",
-        "home_runs_per_game_std", "away_runs_per_game_std",
-        "home_ra_per_game_std", "away_ra_per_game_std",
-    ]),
-    ("Bullpen Quality + Load", [
-        "home_bullpen_xwoba_against_l14", "away_bullpen_xwoba_against_l14",
-        "home_bullpen_whiff_rate_l14", "away_bullpen_whiff_rate_l14",
-        "home_bullpen_barrel_rate_l14", "away_bullpen_barrel_rate_l14",
-        "home_bullpen_pitches_l1d", "away_bullpen_pitches_l1d",
-        "home_bullpen_games_l1d", "away_bullpen_games_l1d",
-        "home_bullpen_pitches_l2d", "away_bullpen_pitches_l2d",
-        "home_bullpen_games_l2d", "away_bullpen_games_l2d",
-        "home_bullpen_pitches_l3d", "away_bullpen_pitches_l3d",
-        "home_bullpen_games_l3d", "away_bullpen_games_l3d",
-        "home_bullpen_back_to_back_l2d", "away_bullpen_back_to_back_l2d",
-        "home_bullpen_heavy_work_l2d", "away_bullpen_heavy_work_l2d",
-    ]),
-    ("Season-to-Date Record", [
-        "home_win_pct_home_std", "away_win_pct_away_std",
-        "home_win_pct_l20", "away_win_pct_l20",
-    ]),
-    ("Win Percentage", ["home_win_pct_l20", "away_win_pct_l20"]),
-    ("Home Field Factor", []),   # structural — anchored relative to win-pct group
-    ("Lineup Matchup", [
-        "home_lineup_xwoba_vs_sp", "away_lineup_xwoba_vs_sp",
-        "home_bvp_xwoba", "away_bvp_xwoba",
-    ]),
-    ("Posted Lineup Quality", [
-        "home_lineup_xwoba_vs_hand_L30", "away_lineup_xwoba_vs_hand_L30",
-        "home_lineup_xwoba_weighted", "away_lineup_xwoba_weighted",
-        "home_lineup_xwoba_top5", "away_lineup_xwoba_top5",
-        "home_lineup_barrel_rate_vs_hand_L30", "away_lineup_barrel_rate_vs_hand_L30",
-        "home_lineup_barrel_rate_weighted", "away_lineup_barrel_rate_weighted",
-        "home_lineup_barrel_rate_top5", "away_lineup_barrel_rate_top5",
-        "lineup_features_missing",
-    ]),
-    ("Pitch Quality", [
-        "home_sp_rv_per_100", "away_sp_rv_per_100",
-        "home_sp_xwoba_arsenal", "away_sp_xwoba_arsenal",
-        "home_sp_whiff_arsenal", "away_sp_whiff_arsenal",
-        "home_bp_rv_per_100_weighted", "away_bp_rv_per_100_weighted",
-        "home_bp_xwoba_arsenal_weighted", "away_bp_xwoba_arsenal_weighted",
-        "home_bp_whiff_arsenal_weighted", "away_bp_whiff_arsenal_weighted",
-        "home_sp_pitch_quality_missing", "away_sp_pitch_quality_missing",
-        "home_bp_pitch_quality_missing", "away_bp_pitch_quality_missing",
-    ]),
-]
+_OTHER_GROUP = OTHER_GROUP
+
+
+def _model_importances(model) -> tuple[list[dict], float]:
+    """Partition a fitted model's gain across the shared factor groups."""
+    names_attr = getattr(model, "feature_name_", None)
+    importances_attr = getattr(model, "feature_importances_", None)
+    names = list(names_attr) if names_attr is not None else []
+    importances = list(importances_attr) if importances_attr is not None else []
+    return group_importances(names, importances)
+
+
+def build_model_factor_summary(model) -> dict:
+    """Slate-level model transparency block: real LightGBM importances by group.
+
+    This is what the dashboard's Factors tab and rail read, so the displayed
+    factors always match the deployed model. SHAP per-game attributions are a
+    planned extension (see the per-game ``explain`` field); this summary is the
+    global feature-importance view.
+    """
+    groups, _ = _model_importances(model)
+    names_attr = getattr(model, "feature_name_", None)
+    feature_count = len(list(names_attr)) if names_attr is not None else 0
+    return {
+        "name": "home_win",
+        "mode": DEFAULT_MODEL_MODE,
+        "featureCount": feature_count,
+        "importanceMetric": "lightgbm_split_gain",
+        "factorGroups": [
+            {"name": g["name"], "source": g["source"], "pct": g["pct"]}
+            for g in groups
+        ],
+    }
+
+
+# Per-game context notes keyed by factor-group name. The importance share is
+# global (same every game); the note carries this matchup's values.
+def _factor_notes(
+    aw_p: dict, hm_p: dict,
+    aw_form: list[str], hm_form: list[str],
+    aw_rpg: float, hm_rpg: float,
+    aw_rec: dict, hm_rec: dict,
+) -> dict[str, str]:
+    return {
+        "Starting Pitcher Quality": f"{aw_p['name']} vs {hm_p['name']}",
+        "Rest & Availability": "Days rest and recent start load",
+        "Recent Form (L10/L20)": f"{''.join(aw_form) or '—'} vs {''.join(hm_form) or '—'}",
+        "Run Production": f"{aw_rpg} vs {hm_rpg} R/G last 10",
+        "Bullpen Quality + Load": "Reliever run prevention and recent workload",
+        "Home/Away Record": f"{aw_rec['wPct']} vs {hm_rec['wPct']} overall",
+        "Park Factors": "Venue run/HR environment",
+        _OTHER_GROUP[0]: "Additional model features",
+    }
 
 
 def _build_factors(
@@ -228,39 +209,21 @@ def _build_factors(
     aw_rpg: float, hm_rpg: float,
     aw_rec: dict, hm_rec: dict,
 ) -> list[dict]:
-    importances = dict(zip(model.feature_name_, model.feature_importances_, strict=False))
-    total = max(sum(importances.values()), 1)
+    """Per-game factor list from the deployed model's real importances.
 
-    def group_score(cols: list[str]) -> float:
-        return sum(importances.get(c, 0) for c in cols) / total
-
-    raw = [group_score(cols) for _, cols in _FACTOR_COLS]
-    # Structural factors anchored relative to win-pct group
-    names = [name for name, _ in _FACTOR_COLS]
-    win_idx = names.index("Win Percentage")
-    home_field_idx = names.index("Home Field Factor")
-    lineup_idx = names.index("Lineup Matchup")
-    win_pct_score = raw[win_idx] if raw[win_idx] > 0 else 0.01
-    raw[home_field_idx] = win_pct_score * 0.80
-    raw[lineup_idx] = win_pct_score * 0.50
-
-    max_raw = max(raw) if max(raw) > 0 else 1
-    pcts = [max(5, int(round(v / max_raw * 82))) for v in raw]
-
-    notes = [
-        f"{aw_p['name']} vs {hm_p['name']}",
-        f"{''.join(aw_form)} vs {''.join(hm_form)}",
-        f"{aw_rpg} vs {hm_rpg} R/G last 10",
-        "Reliever run prevention and recent workload",
-        f"{aw_rec['wPct']} vs {hm_rec['wPct']} overall",
-        f"{aw_rec['wPct']} vs {hm_rec['wPct']} overall",
-        "Standard home field adjustment",
-        "Batter xwOBA vs SP handedness + career BvP",
-    ]
-
+    Only groups the model actually uses appear (non-zero gain); ``pct`` is the
+    group's true share of total model gain. No synthetic or anchored factors.
+    """
+    groups, _ = _model_importances(model)
+    notes = _factor_notes(aw_p, hm_p, aw_form, hm_form, aw_rpg, hm_rpg, aw_rec, hm_rec)
     return [
-        {"name": name, "pct": pct, "note": note}
-        for (name, _), pct, note in zip(_FACTOR_COLS, pcts, notes, strict=False)
+        {
+            "name": g["name"],
+            "source": g["source"],
+            "pct": g["pct"],
+            "note": notes.get(g["name"], f"{g['source']} features"),
+        }
+        for g in groups
     ]
 
 
@@ -508,7 +471,6 @@ def _quick_game_payload(
             "series": "REGULAR SEASON",
             "venue": _clean_text(slate_row.get("venue_name"), "TBD"),
             "firstPitch": _first_pitch_et(slate_row.get("scheduled_start_utc", "")),
-            "weather": "SEE VENUE",
             "line": "-",
             "status": _clean_text(slate_row.get("status"), "PREVIEW").upper(),
         },
@@ -566,6 +528,8 @@ def _quick_game_payload(
         ],
         "factors": factors,
         "runDist": _run_dist(aw_runs, hm_runs),
+        # Extension point for per-game SHAP (TreeExplainer) attributions.
+        "explain": {"shap": None},
     }
 
 
@@ -673,7 +637,6 @@ def _assemble_game(
             "series":     "REGULAR SEASON",
             "venue":      slate_row.get("venue_name") or "—",
             "firstPitch": _first_pitch_et(slate_row.get("scheduled_start_utc", "")),
-            "weather":    "SEE VENUE",
             "line":       "—",
             "status":     (slate_row.get("status") or "PREVIEW").upper(),
         },
@@ -728,6 +691,8 @@ def _assemble_game(
         ],
         "factors":  factors,
         "runDist":  _run_dist(aw_exp, hm_exp),
+        # Extension point for per-game SHAP (TreeExplainer) attributions.
+        "explain":  {"shap": None},
     }
 
 

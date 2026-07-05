@@ -26,14 +26,18 @@ import {
   performanceTrend,
   predictionWinner,
 } from './data/mockModelData';
-import type { GamePrediction } from './data/mockModelData';
+import type { GamePrediction, ModelFactor } from './data/mockModelData';
 import { fetchMlbSchedule, fetchMlbScheduleRange } from './services/mlbScheduleApi';
 import type { MlbGame } from './services/mlbScheduleApi';
 import {
   buildPredictionFromModelSlate,
   fetchModelSlate,
+  modelSummaryToFactors,
   type ModelSlateStatus,
+  type SlateModelSummary,
+  type SlateProvenance,
 } from './services/modelSlate';
+import { ProvenanceBar } from './components/ProvenanceBar';
 
 const confidenceOrder = ['All', 'High', 'Medium', 'Low'] as const;
 const edgeFilters = [
@@ -43,7 +47,6 @@ const edgeFilters = [
   'Home favorites',
   'Underdog value',
   'Pitcher advantage',
-  'Weather impact',
 ] as const;
 
 const compactNavItems: Array<{ key: NavKey; label: string }> = [
@@ -95,6 +98,21 @@ function lastUpdatedLabel() {
   }).format(new Date());
 }
 
+// Formats the slate's data-as-of ISO timestamp (build time), so the header
+// reflects when the data was actually assembled — not the browser's clock.
+function formatAsOfLabel(iso: string) {
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) return iso;
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'America/New_York',
+    timeZoneName: 'short',
+  }).format(parsed);
+}
+
 function shiftDate(date: string, days: number) {
   const [year, month, day] = date.split('-').map(Number);
   return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10);
@@ -124,8 +142,6 @@ function applyGameFilters(
     next = next.filter((game) => game.modelEdge >= 3);
   } else if (edgeFilter === 'Pitcher advantage') {
     next = next.filter((game) => game.topFactors.some((factor) => factor.category === 'Pitching'));
-  } else if (edgeFilter === 'Weather impact') {
-    next = next.filter((game) => game.topFactors.some((factor) => factor.category === 'Weather'));
   }
 
   return next;
@@ -186,6 +202,8 @@ function DashboardPage({
   selectedDate,
   modelSlateStatus,
   modelSlateMessage,
+  factors,
+  factorsAreReal,
   onOpenGame,
 }: {
   predictions: GamePrediction[];
@@ -195,6 +213,8 @@ function DashboardPage({
   selectedDate: string;
   modelSlateStatus: ModelSlateStatus;
   modelSlateMessage: string;
+  factors: ModelFactor[];
+  factorsAreReal: boolean;
   onOpenGame: (game: GamePrediction) => void;
 }) {
   if (!predictions.length) return <EmptySlate selectedDate={selectedDate} />;
@@ -247,7 +267,10 @@ function DashboardPage({
 
         <div className="space-y-4">
           <ModelHealthCard />
-          <FactorImpactList factors={modelFactors.slice(0, 7)} title="Key model factors" />
+          <FactorImpactList
+            factors={factors.slice(0, 7)}
+            title={factorsAreReal ? 'Model feature importance' : 'Key model factors (prototype)'}
+          />
           <PowerRankingsCard teams={powerRankings} />
         </div>
       </section>
@@ -481,28 +504,51 @@ function ModelAccuracyPage({
   );
 }
 
-function ModelFactorsPage() {
+function ModelFactorsPage({
+  factors,
+  model,
+  factorsAreReal,
+}: {
+  factors: ModelFactor[];
+  model?: SlateModelSummary;
+  factorsAreReal: boolean;
+}) {
   return (
     <div className="space-y-5">
       <section className="glass-card p-5">
         <p className="section-kicker">Model factors</p>
         <h2 className="section-title">How Diamond Forecast evaluates a game</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-          These groups explain the model output at a front-office summary level. Production data can replace
-          each placeholder signal without changing the presentation layer.
-        </p>
+        {factorsAreReal ? (
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+            Feature groups below are the deployed <strong>{model?.mode ?? 'pregame_safe'}</strong> model&apos;s
+            real importances ({model?.featureCount ?? '—'} features, {model?.importanceMetric ?? 'split gain'}),
+            grouped by data source. Percentages are each group&apos;s share of total model gain. Per-game signed
+            attributions are a planned SHAP extension.
+          </p>
+        ) : (
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-amber-900">
+            No trained-model slate is loaded for this date, so these are prototype placeholder factors. Build a
+            slate with <code>python scripts/build_static_slate.py</code> to see real model importances.
+          </p>
+        )}
       </section>
       <div className="grid gap-4 lg:grid-cols-2">
-        {modelFactors.map((factor) => (
+        {factors.map((factor) => (
           <article className="glass-card p-5" key={factor.name}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">{factor.category}</p>
                 <h3 className="mt-2 text-lg font-semibold text-slate-950">{factor.name}</h3>
               </div>
-              <span className={`rounded-full px-3 py-1 text-xs font-bold ${factor.direction === 'Positive' ? 'bg-teal-700/12 text-teal-900' : factor.direction === 'Negative' ? 'bg-red-500/12 text-red-900' : 'bg-slate-500/12 text-slate-700'}`}>
-                {factor.direction}
-              </span>
+              {factorsAreReal ? (
+                <span className="rounded-full bg-teal-700/12 px-3 py-1 text-xs font-black text-teal-900">
+                  {factor.impact}% gain
+                </span>
+              ) : (
+                <span className={`rounded-full px-3 py-1 text-xs font-bold ${factor.direction === 'Positive' ? 'bg-teal-700/12 text-teal-900' : factor.direction === 'Negative' ? 'bg-red-500/12 text-red-900' : 'bg-slate-500/12 text-slate-700'}`}>
+                  {factor.direction}
+                </span>
+              )}
             </div>
             <p className="mt-3 text-sm leading-6 text-slate-600">{factor.description}</p>
             <div className="mt-4 rounded-xl border border-slate-300/50 bg-white/45 p-3 text-sm text-slate-700">
@@ -575,6 +621,8 @@ function App() {
   const [selectedGameId, setSelectedGameId] = useState<string>('');
   const [modelSlateStatus, setModelSlateStatus] = useState<ModelSlateStatus>('missing');
   const [modelSlateMessage, setModelSlateMessage] = useState('');
+  const [modelSummary, setModelSummary] = useState<SlateModelSummary | undefined>(undefined);
+  const [slateProvenance, setSlateProvenance] = useState<SlateProvenance | undefined>(undefined);
   const [modelPredictionsByGamePk, setModelPredictionsByGamePk] = useState<Map<number, ReturnType<typeof buildPredictionFromModelSlate>>>(new Map());
 
   useEffect(() => {
@@ -617,12 +665,16 @@ function App() {
     let active = true;
     setModelSlateMessage('');
     setModelSlateStatus('missing');
+    setModelSummary(undefined);
+    setSlateProvenance(undefined);
     setModelPredictionsByGamePk(new Map());
 
     fetchModelSlate(selectedDate).then((result) => {
       if (!active) return;
       setModelSlateStatus(result.status);
       setModelSlateMessage(result.message ?? '');
+      setModelSummary(result.model);
+      setSlateProvenance(result.provenance);
       setModelPredictionsByGamePk(() => {
         const next = new Map<number, ReturnType<typeof buildPredictionFromModelSlate>>();
         scheduleGames.forEach((game) => {
@@ -649,6 +701,17 @@ function App() {
   );
   const selectedGame = predictions.find((game) => game.id === selectedGameId) ?? predictions[0];
 
+  // Real LightGBM importances from the loaded slate; mock factors only when no
+  // trained-model slate is available for the date.
+  const factorsAreReal = Boolean(modelSummary?.factorGroups?.length);
+  const modelFactorList = useMemo<ModelFactor[]>(
+    () => (factorsAreReal ? modelSummaryToFactors(modelSummary) : modelFactors),
+    [factorsAreReal, modelSummary],
+  );
+  const updatedLabel = slateProvenance?.dataAsOf
+    ? formatAsOfLabel(slateProvenance.dataAsOf)
+    : lastUpdated;
+
   const openGame = (game: GamePrediction) => {
     setSelectedGameId(game.id);
     setActiveNav('game-detail');
@@ -664,6 +727,8 @@ function App() {
         selectedDate={selectedDate}
         modelSlateStatus={modelSlateStatus}
         modelSlateMessage={modelSlateMessage}
+        factors={modelFactorList}
+        factorsAreReal={factorsAreReal}
         onOpenGame={openGame}
       />
     ),
@@ -680,7 +745,7 @@ function App() {
     ),
     'game-detail': selectedGame ? <GameDetailPanel game={selectedGame} /> : <EmptySlate selectedDate={selectedDate} />,
     accuracy: <ModelAccuracyPage selectedDate={selectedDate} />,
-    factors: <ModelFactorsPage />,
+    factors: <ModelFactorsPage factors={modelFactorList} model={modelSummary} factorsAreReal={factorsAreReal} />,
     backtest: <BacktestPage />,
     settings: <SettingsPage source={scheduleSource} />,
   } satisfies Record<NavKey, ReactElement>;
@@ -696,9 +761,14 @@ function App() {
             selectedDate={selectedDate}
             onDateChange={setSelectedDate}
             onStepDate={(days) => setSelectedDate((date) => shiftDate(date, days))}
-            lastUpdated={lastUpdated}
+            lastUpdated={updatedLabel}
             sourceLabel={scheduleSource === 'live' ? 'Live schedule' : 'Fallback data'}
             usingFallback={scheduleSource === 'fallback'}
+          />
+          <ProvenanceBar
+            provenance={slateProvenance}
+            modelSlateStatus={modelSlateStatus}
+            selectedDate={selectedDate}
           />
           <nav className="no-scrollbar mt-4 flex gap-2 overflow-x-auto rounded-2xl border border-slate-300/45 bg-white/55 p-2 shadow-sm backdrop-blur-md lg:hidden" aria-label="Dashboard sections">
             {compactNavItems.map((item) => (
